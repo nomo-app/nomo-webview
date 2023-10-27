@@ -1,0 +1,103 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
+/// generic_js_bridge.dart does not depend on any particular WebView implementation.
+
+class KnownJsHandlerError extends Error implements UnsupportedError {
+  final String message;
+
+  KnownJsHandlerError(this.message);
+
+  String toString() {
+    return message;
+  }
+}
+
+/// A JsHandler takes arguments from both Dart and JavaScript and returns a Map that gets returned to JavaScript.
+/// Moreover, a JsHandler takes a "functionName" from JavaScript.
+/// The contents of the returned map must be serializable to JSON.
+/// A JsHandler must not silent-catch errors, otherwise the JavaScript code could not handle errors!
+/// If a JsHandler catches an internal error, it should be rethrown such that JavaScript can handle the error.
+typedef JsHandler = Future<Map<String, dynamic>> Function({
+  required String functionName,
+  required Map<String, dynamic> argsFromJS,
+  required dynamic argsFromDart,
+  BuildContext? context,
+});
+
+/// A JsInjector takes a String of JavaScript-code and injects it into a WebView.
+/// This package provides a default implementation of JsInjector.
+typedef JsInjector = Future<void> Function(String jsCode);
+
+Future<void> handleMessageFromJavaScript({
+  required String messageFromJs,
+  required dynamic argsFromDart,
+  required JsHandler jsHandler,
+  required JsInjector jsInjector,
+  BuildContext? context,
+}) async {
+  if (kDebugMode) {
+    // message can be a string of multiple megabytes; therefore do not print it in production!
+    debugPrint("handleMessageFromJavaScript: " + messageFromJs);
+  }
+
+  final Map<String, dynamic> obj = jsonDecode(messageFromJs);
+  final String invocationID = obj["invocationID"];
+  final String functionName = obj["functionName"];
+  final Map<String, dynamic>? argsFromJs = obj["args"];
+
+  try {
+    final Map<String, dynamic> result = await jsHandler(
+        functionName: functionName,
+        argsFromJS: argsFromJs ?? {},
+        argsFromDart: argsFromDart,
+        context: context);
+    await _sendResultToJavaScript(
+        result: result,
+        promiseStatus: "resolve",
+        invocationID: invocationID,
+        jsInjector: jsInjector);
+  } catch (e, s) {
+    final Map<String, dynamic> result;
+    if (e is KnownJsHandlerError) {
+      // known error cases like "user errors": give a simple error message to JavaScript, without any stackTrace
+      result = {
+        functionName: e.toString(),
+      };
+    } else {
+      // those are unknown(!) errors: give a stackTrace to JavaScript to enable debugging
+      result = {
+        "exception": e.toString(),
+        "dartStackTrace": s.toString(),
+      };
+    }
+    await _sendResultToJavaScript(
+      result: result,
+      promiseStatus: "reject",
+      invocationID: invocationID,
+      jsInjector: jsInjector,
+    );
+  }
+}
+
+Future<void> _sendResultToJavaScript({
+  required Map<String, dynamic> result,
+  required String promiseStatus,
+  required String invocationID,
+  required JsInjector jsInjector,
+}) async {
+  final Map<String, dynamic> resultMap = {
+    "status": promiseStatus,
+    "invocationID": invocationID,
+    "result": result,
+  };
+  final responseJson = jsonEncode(resultMap);
+  final responseBytes = utf8.encode(responseJson);
+  final responseBase64 = base64.encode(responseBytes);
+
+  final returnForJs = 'fulfillPromiseFromFlutter(\'' + responseBase64 + '\')';
+
+  await jsInjector(returnForJs);
+}
