@@ -38,6 +38,8 @@ Next, expand your pubspec.yaml accordingly:
 dependencies:
     nomo_webview:
         path: packages/nomo-webview
+    shelf: ^1.4.1 # optional
+    shelf_static: ^1.1.2 # optional
 ```
 
 Afterwards, you can call `nomoInitJsBridge` to enable a bridge between Dart and JavaScript.
@@ -94,6 +96,35 @@ See the following examples of bridge-modules:
 See https://github.com/nomo-app/nomo-webon-kit/blob/main/README.md for documentation on how to use
 those bridge-modules.
 You can install the whole `nomo-webon-kit` or you can copy parts of it to suit your needs.
+
+## How to serve web-assets
+
+NomoWebView works out of the box for remote URLs.
+However, additional code is needed for local assets.
+Similar to [CapacitorJS](https://github.com/ionic-team/capacitor/blob/5.x/android/capacitor/src/main/java/com/getcapacitor/WebViewLocalServer.java), a localhost-server is needed for serving local assets offline.
+
+We recommend the packages https://pub.dev/packages/shelf and https://pub.dev/packages/shelf_static for launching a localhost-server.
+Depending on the use case, a customized shelf handler may be needed.
+
+For example, the following function launches a localhost-server to serve web-assets from an appdata directory:
+
+```
+import 'dart:async';
+import 'package:shelf/shelf_io.dart' as shelf_io;
+import 'package:shelf/shelf.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shelf_static/shelf_static.dart';
+
+Future<void> startLocalHostServer() async {
+  final documentsDirectory = await getApplicationDocumentsDirectory();
+  final webAssetsPath = '${documentsDirectory.path}/my_webassets/';
+
+  final int port = 8080;
+  final handler = const Pipeline().addMiddleware(logRequests()).addHandler(
+      createStaticHandler(webAssetsPath, defaultDocument: 'index.html'));
+  await shelf_io.serve(handler, '0.0.0.0', port, shared: true);
+}
+```
 
 ## Does it support Desktop apps?
 
