@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 
 // Import for Android features.
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -18,4 +18,6 @@ void enableMobileRemoteDebugging() {
   if (Platform.isAndroid) {
     AndroidWebViewController.enableDebugging(true);
   }
-}
+}*/
+
+//Gets handled by inAppWebview
