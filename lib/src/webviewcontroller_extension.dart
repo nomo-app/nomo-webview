@@ -92,6 +92,29 @@ class NomoController {
     if (onWebviewInit != null) {
       onWebviewInit!(this);
     }
+
+    /*evaluateJavascript(source: """
+if (!window.webkit) {
+    window.webkit = {};
+}
+
+if (!window.webkit.messageHandlers) {
+    window.webkit.messageHandlers = {};
+}
+
+if (!Array.isArray(window.webkit.messageHandlers.JSChannel)) {
+    window.webkit.messageHandlers.JSChannel = [];
+}
+
+window.webkit.messageHandlers.JSChannel.push({
+    postMessage: function(args) {
+        return new Promise(resolve => {
+            const result = flutter_inappwebview.callHandler('JSChannel', args);
+            resolve(result);
+        });
+    }
+});
+""");*/
   }
 
   /*: super(
