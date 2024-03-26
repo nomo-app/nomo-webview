@@ -92,29 +92,6 @@ class NomoController {
     if (onWebviewInit != null) {
       onWebviewInit!(this);
     }
-
-    /*evaluateJavascript(source: """
-if (!window.webkit) {
-    window.webkit = {};
-}
-
-if (!window.webkit.messageHandlers) {
-    window.webkit.messageHandlers = {};
-}
-
-if (!Array.isArray(window.webkit.messageHandlers.JSChannel)) {
-    window.webkit.messageHandlers.JSChannel = [];
-}
-
-window.webkit.messageHandlers.JSChannel.push({
-    postMessage: function(args) {
-        return new Promise(resolve => {
-            const result = flutter_inappwebview.callHandler('JSChannel', args);
-            resolve(result);
-        });
-    }
-});
-""");*/
   }
 
   /*: super(
@@ -309,6 +286,11 @@ window.webkit.messageHandlers.JSChannel.push({
     if (onLoadStopInternal != null) {
       onLoadStopInternal!(this, controller, url);
     }
+    // for ios onLoadStart is too early to init channel
+    controller.evaluateJavascript(source: """
+              NOMOJSChannel = {};
+              window.NOMOJSChannel.postMessage = (args) => {return new Promise(resolve => {const result = flutter_inappwebview.callHandler('NOMOJSChannel', args); resolve(result);});};
+              """);
   }
 
   void Function(NomoController nomoControl, InAppWebViewController controller,
@@ -960,6 +942,7 @@ window.webkit.messageHandlers.JSChannel.push({
             // we prefer the context from the last build because we assume it is more likely to be valid
             context: getBuildContext(),
           );
+          return {'test': 'test_val'};
         });
   }
 
