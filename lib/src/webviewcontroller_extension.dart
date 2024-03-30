@@ -48,6 +48,7 @@ class NomoController {
       this.onLoadResource,
       this.onLoadResourceWithCustomScheme,
       this.onLoadStopInternal,
+      this.onLoadStartInternal,
       this.onLongPressHitTestResult,
       this.onPrintRequest,
       this.onProgressChanged,
@@ -86,7 +87,7 @@ class NomoController {
       this.onContentSizeChanged});
 
   final keepAlive = InAppWebViewKeepAlive();
-
+  //InAppWebViewKeepAlive? keepAlive;
   void onWebViewCreated(controller) {
     inAppController = controller;
     if (onWebviewInit != null) {
@@ -276,25 +277,22 @@ class NomoController {
       onLoadResourceWithCustomScheme;
 
   void onLoadStart(InAppWebViewController controller, WebUri? url) {
-    controller.evaluateJavascript(source: """
-              NOMOJSChannel = {};
-              window.NOMOJSChannel.postMessage = (args) => {return new Promise(resolve => {const result = flutter_inappwebview.callHandler('NOMOJSChannel', args); resolve(result);});};
-              """);
+    if (onLoadStartInternal != null) {
+      onLoadStartInternal!(this, controller, url);
+    }
   }
 
   void onLoadStop(InAppWebViewController controller, WebUri? url) {
     if (onLoadStopInternal != null) {
       onLoadStopInternal!(this, controller, url);
     }
-    // for ios onLoadStart is too early to init channel
-    controller.evaluateJavascript(source: """
-              NOMOJSChannel = {};
-              window.NOMOJSChannel.postMessage = (args) => {return new Promise(resolve => {const result = flutter_inappwebview.callHandler('NOMOJSChannel', args); resolve(result);});};
-              """);
   }
 
   void Function(NomoController nomoControl, InAppWebViewController controller,
       WebUri? url)? onLoadStopInternal;
+
+  void Function(NomoController nomoControl, InAppWebViewController controller,
+      WebUri? url)? onLoadStartInternal;
 
   void Function(InAppWebViewController controller,
       InAppWebViewHitTestResult hitTestResult)? onLongPressHitTestResult;
