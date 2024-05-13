@@ -51,4 +51,37 @@ extension NomoExt on WebViewController {
       );
     });
   }
+
+  void injectIpfsScheme() {
+    runJavaScript("""
+      function replaceWithIPFSGateway() {
+          // Get all elements with src attribute
+          var elements = document.querySelectorAll('[src]');
+          
+          // Loop through each element
+          elements.forEach(function(element) {
+              // Get the original source URL
+              var originalSrc = element.getAttribute('src');
+              
+              // Check if the source URL starts with "ipfs://"
+              if (originalSrc.startsWith('ipfs://')) {
+                  // Extract the IPFS CID from the source URL
+                  var ipfsCID = originalSrc.replace('ipfs://', '');
+                  
+                  // Construct the HTTP gateway URL
+                  var gatewayURL = 'https://ipfs.io/ipfs/';
+                  
+                  // Construct the final URL by combining the gateway URL and the IPFS CID
+                  var finalURL = gatewayURL + ipfsCID;
+                  
+                  // Replace the original source URL with the final URL
+                  element.setAttribute('src', finalURL);
+              }
+          });
+      }
+
+      // Call the function to replace source URLs with IPFS gateway URLs when the page is loaded
+      window.onload = replaceWithIPFSGateway;
+      """);
+  }
 }
