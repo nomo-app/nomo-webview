@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+/*import 'package:flutter/widgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:nomo_webview/nomo_webview.dart';
 
@@ -30,4 +30,4 @@ Future<Map<String, dynamic>> myJsHandler({
   } else {
     throw KnownJsHandlerError("Unknown function $functionName");
   }
-}
+}*/

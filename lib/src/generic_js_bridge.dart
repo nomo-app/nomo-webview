@@ -60,21 +60,22 @@ Future<void> handleMessageFromJavaScript({
         invocationID: invocationID,
         jsInjector: jsInjector);
   } catch (e, s) {
-    final Map<String, dynamic> result;
+    final String
+        resultError; // give errors as raw string instead of objects to make console.error work in JavaScript
     if (e is KnownJsHandlerError) {
       // known error cases like "user errors": give a simple error message to JavaScript, without any stackTrace
-      result = {
+      resultError = jsonEncode({
         functionName: e.toString(),
-      };
+      });
     } else {
       // those are unknown(!) errors: give a stackTrace to JavaScript to enable debugging
-      result = {
+      resultError = jsonEncode({
         "exception": e.toString(),
         "dartStackTrace": s.toString(),
-      };
+      });
     }
     await _sendResultToJavaScript(
-      result: result,
+      result: resultError,
       promiseStatus: "reject",
       invocationID: invocationID,
       jsInjector: jsInjector,
@@ -83,7 +84,7 @@ Future<void> handleMessageFromJavaScript({
 }
 
 Future<void> _sendResultToJavaScript({
-  required Map<String, dynamic> result,
+  required dynamic result,
   required String promiseStatus,
   required String invocationID,
   required JsInjector jsInjector,
