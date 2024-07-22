@@ -93,109 +93,6 @@ class NomoController {
     }
   }
 
-  /*: super(
-          key: key,
-          initialUrlRequest: URLRequest(url: WebUri(controller.initUrl)),
-          initialUserScripts: UnmodifiableListView<UserScript>([]),
-          initialSettings: settings,
-          contextMenu: contextMenu,
-          pullToRefreshController: pullToRefreshController,
-          onWebViewCreated: (controller) async {
-            //webViewController = controller;
-            controller.addJavaScriptHandler(
-                handlerName: 'NOMOJSChannel',
-                callback: (args) {
-                  // print arguments coming from the JavaScript side!
-                  print(args);
-                  String message = args.toString();
-                  message = message.substring(1, message.length - 1);
-                  print(message);
-                  String dartMessage = message;
-                  String formatMessage = unescapeJson(dartMessage);
-
-                  Future<void> jsInjector(String jsCode) async {
-                      controller.evaluateJavascript(source: jsCode);
-                  }
-
-                  handleMessageFromJavaScript(
-                      jsHandler: handleMessageFromWebOn,
-                      messageFromJs: formatMessage,
-                      argsFromDart: widget.manifest,
-                      jsInjector: jsInjector,
-                      context: context);
-
-                  // return data to the JavaScript side!
-                  return {'bar': 'bar_value', 'baz': 'baz_value'};
-                });
-          },
-          onLoadStart: (controller, url) async {
-            setState(() {
-              this.url = url.toString();
-              urlController.text = this.url;
-            });
-            controller.evaluateJavascript(source: """
-              NOMOJSChannel = {};
-              window.NOMOJSChannel.postMessage = (args) => {return new Promise(resolve => {const result = flutter_inappwebview.callHandler('NOMOJSChannel', args); resolve(result);});};
-              """);
-          },
-          onPermissionRequest: (controller, request) async {
-            return PermissionResponse(
-                resources: request.resources,
-                action: PermissionResponseAction.GRANT);
-          },
-          shouldOverrideUrlLoading: (controller, navigationAction) async {
-            var uri = navigationAction.request.url!;
-            if (![
-              "http",
-              "https",
-              "file",
-              "chrome",
-              "data",
-              "javascript",
-              "about"
-            ].contains(uri.scheme)) {
-              if (await canLaunchUrl(uri)) {
-                // Launch the App
-                await launchUrl(
-                  uri,
-                );
-                // and cancel the request
-                return NavigationActionPolicy.CANCEL;
-              }
-            }
-
-            return NavigationActionPolicy.ALLOW;
-          },
-          onLoadStop: (controller, url) async {
-            pullToRefreshController?.endRefreshing();
-            setState(() {
-              this.url = url.toString();
-              urlController.text = this.url;
-            });
-          },
-          onReceivedError: (controller, request, error) {
-            pullToRefreshController?.endRefreshing();
-          },
-          onProgressChanged: (controller, progress) {
-            if (progress == 100) {
-              pullToRefreshController?.endRefreshing();
-            }
-            setState(() {
-              this.progress = progress / 100;
-              urlController.text = this.url;
-            });
-          },
-          onUpdateVisitedHistory: (controller, url, isReload) {
-            setState(() {
-              this.url = url.toString();
-              urlController.text = this.url;
-            });
-          },
-          onConsoleMessage: (controller, consoleMessage) {
-            print(consoleMessage);
-          },
-        );*/
-
   Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
   int? windowId;
   HeadlessInAppWebView? headlessWebView;
@@ -356,7 +253,7 @@ class NomoController {
   Future<PermissionResponse?> onPermissionRequest(
       InAppWebViewController controller,
       PermissionRequest permissionRequest) async {
-    return await PermissionResponse(
+    return PermissionResponse(
         resources: permissionRequest.resources,
         action: PermissionResponseAction.GRANT);
   }
@@ -424,14 +321,9 @@ class NomoController {
   }
 
   Future<void> loadUrl(
-      {required URLRequest urlRequest,
-      @Deprecated('Use allowingReadAccessTo instead')
-      Uri? iosAllowingReadAccessTo,
-      WebUri? allowingReadAccessTo}) {
+      {required URLRequest urlRequest, WebUri? allowingReadAccessTo}) {
     return inAppController!.loadUrl(
-        urlRequest: urlRequest,
-        iosAllowingReadAccessTo: iosAllowingReadAccessTo,
-        allowingReadAccessTo: allowingReadAccessTo);
+        urlRequest: urlRequest, allowingReadAccessTo: allowingReadAccessTo);
   }
 
   Future<void> postUrl({required WebUri url, required Uint8List postData}) {
@@ -581,12 +473,8 @@ class NomoController {
     return inAppController!.getContentWidth();
   }
 
-  Future<void> zoomBy(
-      {required double zoomFactor,
-      @Deprecated('Use animated instead') bool? iosAnimated,
-      bool animated = false}) {
-    return inAppController!.zoomBy(
-        zoomFactor: zoomFactor, iosAnimated: iosAnimated, animated: animated);
+  Future<void> zoomBy({required double zoomFactor, bool animated = false}) {
+    return inAppController!.zoomBy(zoomFactor: zoomFactor, animated: animated);
   }
 
   Future<WebUri?> getOriginalUrl() {
@@ -764,9 +652,7 @@ class NomoController {
           "Use pdfConfiguration instead") /* ignore: deprecated_member_use_from_same_package*/
       IOSWKPDFConfiguration? iosWKPdfConfiguration,
       PDFConfiguration? pdfConfiguration}) {
-    return inAppController!.createPdf(
-        iosWKPdfConfiguration: iosWKPdfConfiguration,
-        pdfConfiguration: pdfConfiguration);
+    return inAppController!.createPdf(pdfConfiguration: pdfConfiguration);
   }
 
   Future<Uint8List?> createWebArchiveData() {
@@ -834,10 +720,7 @@ class NomoController {
       String mimeType = "text/html",
       String encoding = "utf8",
       WebUri? baseUrl,
-      @Deprecated('Use historyUrl instead') Uri? androidHistoryUrl,
       WebUri? historyUrl,
-      @Deprecated('Use allowingReadAccessTo instead')
-      Uri? iosAllowingReadAccessTo,
       WebUri? allowingReadAccessTo}) {
     return inAppController!.loadData(
         data: data,
@@ -845,7 +728,6 @@ class NomoController {
         encoding: encoding,
         baseUrl: baseUrl,
         historyUrl: historyUrl,
-        iosAllowingReadAccessTo: iosAllowingReadAccessTo,
         allowingReadAccessTo: allowingReadAccessTo);
   }
 
@@ -900,6 +782,7 @@ class NomoController {
   }
 
   Future<void> clearCache() {
+    // ignore: deprecated_member_use
     return inAppController!.clearCache();
   }
 

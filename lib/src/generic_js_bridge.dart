@@ -40,7 +40,7 @@ Future<void> handleMessageFromJavaScript({
 }) async {
   if (kDebugMode) {
     // message can be a string of multiple megabytes; therefore do not print it in production!
-    debugPrint("handleMessageFromJavaScript: " + messageFromJs);
+    debugPrint("handleMessageFromJavaScript: $messageFromJs");
   }
 
   final Map<String, dynamic> obj = jsonDecode(messageFromJs);
@@ -98,7 +98,7 @@ Future<void> _sendResultToJavaScript({
   final responseBytes = utf8.encode(responseJson);
   final responseBase64 = base64.encode(responseBytes);
 
-  final returnForJs = 'fulfillPromiseFromFlutter(\'' + responseBase64 + '\')';
+  final returnForJs = 'fulfillPromiseFromFlutter(\'$responseBase64\')';
 
   await jsInjector(returnForJs);
 }
