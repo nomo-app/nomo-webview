@@ -51,7 +51,7 @@ class NomoController {
       this.onPrintRequest,
       this.onProgressChanged,
       this.onReceivedClientCertRequest,
-      this.onReceivedHttpAuthRequest,
+      //this.onReceivedHttpAuthRequest,
       this.onReceivedServerTrustAuthRequest,
       this.onScrollChanged,
       this.onUpdateVisitedHistory,
@@ -300,14 +300,20 @@ class NomoController {
       onProgressChanged;
   Future<ClientCertResponse?> Function(InAppWebViewController controller,
       URLAuthenticationChallenge challenge)? onReceivedClientCertRequest;
-  Future<HttpAuthResponse?> onReceivedHttpAuthRequest(InAppWebViewController controller,
+  Future<HttpAuthResponse?> onReceivedHttpAuthRequest(
+      InAppWebViewController controller,
       URLAuthenticationChallenge challenge) async {
-    if (challenge.protectionSpace.authenticationMethod?.toValue() == "URLAuthenticationMethodHTTPBasic") {
+    if (challenge.protectionSpace.authenticationMethod?.toValue() ==
+        "URLAuthenticationMethodHTTPBasic") {
       //open dialog
-      return HttpAuthResponse(action: HttpAuthResponseAction.PROCEED, username: "from dialog", password: "from dialog");
+      return HttpAuthResponse(
+          action: HttpAuthResponseAction.PROCEED,
+          username: "from dialog",
+          password: "from dialog");
     }
     return HttpAuthResponse();
   }
+
   Future<ServerTrustAuthResponse?> Function(InAppWebViewController controller,
       URLAuthenticationChallenge challenge)? onReceivedServerTrustAuthRequest;
   void Function(InAppWebViewController controller, int x, int y)?
