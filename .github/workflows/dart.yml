@@ -13,6 +13,7 @@ jobs:
    steps:
      - uses: actions/checkout@v3
      - uses: subosito/flutter-action@v1
+     - run: git submodule update
      - run: flutter pub get
      - name: Lint analysis
        run: flutter analyze
