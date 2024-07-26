@@ -11,10 +11,14 @@ jobs:
    name: Static code analysis
    runs-on: ubuntu-latest
    steps:
-     - uses: actions/checkout@v3
-     - uses: subosito/flutter-action@v1
-     - run: flutter pub get
+     - name: Checkout
+       uses: actions/checkout@v3
+       with:
+         submodules: true
      - name: Update Submodules
-     - run: git submodule update --recursive --init
+       run: git submodule update --recursive --init
+     - uses: subosito/flutter-action@v1
      - name: Lint analysis
-       run: flutter analyze
+       run: |
+         flutter pub get
+         flutter analyze
