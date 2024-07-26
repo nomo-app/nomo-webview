@@ -1,6 +1,6 @@
 # Nomo WebView
 
-Nomo WebView is an extension of `flutter_webview` to enable web-based experiences in Flutter apps.
+Nomo WebView is an extension of `flutter_inappwebview` to enable web-based experiences in Flutter apps.
 
 This package is inspired by CapacitorJS and Ionic Portals, but for Flutter apps instead of "native
 apps" that are written in Java/Kotlin/Swift.
@@ -14,7 +14,7 @@ to mobile without needing to port them to Flutter.
 
 Despite how common this need is, bringing these web experiences to Flutter apps is not straightforward.
 To integrate Flutter functionality in a safe and controlled way, it is often needed to expand stock WebViews.
-Enter Nomo WebView, an extension of https://pub.dev/packages/webview_flutter.
+Enter Nomo WebView, an extension of https://pub.dev/packages/flutter_inappwebview.
 With Nomo WebView, you can:
 
 - Add web-based features and experiences to an existing Flutter app.
@@ -47,16 +47,17 @@ See the example functions below:
 
 ```
 import 'package:flutter/widgets.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:nomo_webview/nomo_webview.dart';
 
 void initController(Uri uri) async {
-  final c = WebViewController();
-  c.nomoInitJsBridge(jsHandler: myJsHandler);
+  final c = NomoController(
+    initialUrlRequest: UrlRequest(url: WebUri(uri.path))
+    onWebviewInit: (c) {
+      c.nomoInitJsBridge(jsHandler: myJsHandler);
+    }
+  );
 
   // further configurations are possible below...
-  await c.setJavaScriptMode(JavaScriptMode.unrestricted);
-  await c.loadRequest(uri);
 }
 
 Future<Map<String, dynamic>> myJsHandler({
@@ -128,7 +129,7 @@ Future<void> startLocalHostServer() async {
 
 ## Does it support Desktop apps?
 
-At the moment, this package only supports Android/iOS since the underlying `webview_flutter` does
-not support Windows/Linux/macOS.
-See https://github.com/flutter/flutter/issues/41725 for more details about Desktop support.
+At the moment, this package only supports Android/iOS since the underlying `flutter_inappwebview` does
+not support Windows/Linux/macOS in embedded form.
+See https://github.com/pichillilorenzo/flutter_inappwebview/issues/460 for more details about Desktop support.
 There exist alternative WebViews that support Desktop platforms.
