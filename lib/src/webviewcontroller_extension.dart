@@ -812,7 +812,7 @@ class NomoController {
     void Function(String)? rawMessageHandler,
     BuildContext? context,
   }) async {
-    if (context != null) {
+    if (_contextMap[this] == null && context != null) {
       updateBuildContext(context);
     }
     Future<void> jsInjector(String jsCode) async {
