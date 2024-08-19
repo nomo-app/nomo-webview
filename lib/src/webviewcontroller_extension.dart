@@ -13,9 +13,11 @@ final Map<NomoController, BuildContext> _contextMap = {};
 
 class NomoController {
   InAppWebViewController? inAppController;
+  int? localServerPort;
 
   NomoController(
       {this.initialSettings,
+      this.localServerPort,
       this.gestureRecognizers,
       this.windowId,
       this.headlessWebView,
@@ -57,7 +59,7 @@ class NomoController {
       this.onUpdateVisitedHistory,
       this.shouldInterceptAjaxRequest,
       this.shouldInterceptFetchRequest,
-      this.shouldOverrideUrlLoading,
+      this.shouldOverrideUrlLoadingInternal,
       this.onEnterFullscreen,
       this.onExitFullscreen,
       this.onOverScrolled,
@@ -226,9 +228,16 @@ class NomoController {
   Future<FetchRequest?> Function(
           InAppWebViewController controller, FetchRequest fetchRequest)?
       shouldInterceptFetchRequest;
-  Future<NavigationActionPolicy?> Function(
-          InAppWebViewController controller, NavigationAction navigationAction)?
-      shouldOverrideUrlLoading;
+
+  Future<NavigationActionPolicy?> Function(NomoController nomoControl, InAppWebViewController controller, NavigationAction navigationAction)? shouldOverrideUrlLoadingInternal;
+
+  Future<NavigationActionPolicy?> shouldOverrideUrlLoading (
+          InAppWebViewController controller, NavigationAction navigationAction) async {
+    return shouldOverrideUrlLoadingInternal != null
+        ? await shouldOverrideUrlLoadingInternal!(this, controller, navigationAction)
+        : NavigationActionPolicy.ALLOW;
+  }
+
   void Function(InAppWebViewController controller)? onEnterFullscreen;
   void Function(InAppWebViewController controller)? onExitFullscreen;
   void Function(InAppWebViewController controller, int x, int y, bool clampedX,
