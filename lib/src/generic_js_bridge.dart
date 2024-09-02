@@ -43,11 +43,23 @@ Future<void> handleMessageFromJavaScript({
     debugPrint("handleMessageFromJavaScript: $messageFromJs");
   }
 
-  final Map<String, dynamic> obj = jsonDecode(messageFromJs);
+  Map<String, dynamic> obj = {};
+  try {
+    obj = jsonDecode(messageFromJs);
+  } catch (e) {
+    messageFromJs = messageFromJs.replaceAll("\"\"", "\"");
+    messageFromJs = messageFromJs.replaceAll("\"{", "{");
+    messageFromJs = messageFromJs.replaceAll("}\"", "}");
+
+    try {
+      obj = jsonDecode(messageFromJs);
+    } catch (e) {
+      rethrow;
+    }
+  }
   final String invocationID = obj["invocationID"];
   final String functionName = obj["functionName"];
-  final Map<String, dynamic>? argsFromJs = obj["args"];
-
+  Map<String, dynamic>? argsFromJs = obj["args"];
   try {
     final Map<String, dynamic> result = await jsHandler(
         functionName: functionName,
