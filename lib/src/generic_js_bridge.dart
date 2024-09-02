@@ -53,8 +53,28 @@ Future<void> handleMessageFromJavaScript({
 
     try {
       obj = jsonDecode(messageFromJs);
-    } catch (e) {
-      rethrow;
+    } catch (e, s) {
+      final resultError = jsonEncode({
+        "exception": e.toString(),
+        "dartStackTrace": s.toString(),
+      });
+
+      //try to extract invocationID to show better error
+      String? invocationID = messageFromJs.substring(
+          messageFromJs.indexOf("invocationID") + "invocationID".length + 3,
+          messageFromJs.indexOf(
+              "\"",
+              messageFromJs.indexOf("invocationID") +
+                  "invocationID".length +
+                  3));
+
+      await _sendResultToJavaScript(
+        result: resultError,
+        promiseStatus: "reject",
+        invocationID: invocationID.isEmpty ? "-1" : invocationID,
+        jsInjector: jsInjector,
+      );
+      return;
     }
   }
   final String invocationID = obj["invocationID"];
