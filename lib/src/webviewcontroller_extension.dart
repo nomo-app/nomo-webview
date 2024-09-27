@@ -36,125 +36,31 @@ class NomoController {
     }
   }
 
-  Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
-  int? windowId;
-  HeadlessInAppWebView? headlessWebView;
-  bool? preventGestureDelay;
-  TextDirection? layoutDirection;
-  InAppWebViewInitialData? initialData;
-  String? initialFile;
-
   URLRequest? initialUrlRequest;
   UnmodifiableListView<UserScript>? initialUserScripts;
 
-  PullToRefreshController?
-      pullToRefreshController /* = kIsWeb ||
-          ![TargetPlatform.iOS, TargetPlatform.android]
-              .contains(defaultTargetPlatform)
-      ? null
-      : PullToRefreshController(
-          settings: PullToRefreshSettings(
-            color: Colors.blue,
-          ),
-          onRefresh: () async {
-            if (defaultTargetPlatform == TargetPlatform.android) {
-              reload();
-            } else if (defaultTargetPlatform == TargetPlatform.iOS ||
-                defaultTargetPlatform == TargetPlatform.macOS) {
-              loadUrl(
-                  urlRequest: URLRequest(url: await getUrl()));
-            }
-          },
-        )*/
-      ;
-
   InAppWebViewSettings? initialSettings;
   void Function(NomoController nomoControl)? onWebviewInit;
-  FindInteractionController? findInteractionController;
-  ContextMenu? contextMenu;
-  void Function(InAppWebViewController controller, WebUri? url)?
-      onPageCommitVisible;
-  void Function(InAppWebViewController controller, String? title)?
-      onTitleChanged;
-  Future<AjaxRequestAction> Function(
-          InAppWebViewController controller, AjaxRequest ajaxRequest)?
-      onAjaxProgress;
-  Future<AjaxRequestAction?> Function(
-          InAppWebViewController controller, AjaxRequest ajaxRequest)?
-      onAjaxReadyStateChange;
-
   void onConsoleMessage(
       InAppWebViewController controller, ConsoleMessage consoleMessage) {
     print(consoleMessage);
   }
 
-  Future<bool?> Function(InAppWebViewController controller,
-      CreateWindowAction createWindowAction)? onCreateWindow;
-  void Function(InAppWebViewController controller)? onCloseWindow;
-  void Function(InAppWebViewController controller)? onWindowFocus;
-  void Function(InAppWebViewController controller)? onWindowBlur;
   void Function(InAppWebViewController controller,
       DownloadStartRequest downloadStartRequest)? onDownloadStartRequest;
-  Future<JsAlertResponse?> Function(
-          InAppWebViewController controller, JsAlertRequest jsAlertRequest)?
-      onJsAlert;
-  Future<JsConfirmResponse?> Function(
-          InAppWebViewController controller, JsConfirmRequest jsConfirmRequest)?
-      onJsConfirm;
-  Future<JsPromptResponse?> Function(
-          InAppWebViewController controller, JsPromptRequest jsPromptRequest)?
-      onJsPrompt;
-  void Function(InAppWebViewController controller, WebResourceRequest request,
-      WebResourceError error)? onReceivedError;
+
   void Function(InAppWebViewController controller, WebResourceRequest request,
       WebResourceResponse errorResponse)? onReceivedHttpError;
-  void Function(InAppWebViewController controller, LoadedResource resource)?
-      onLoadResource;
+
   Future<CustomSchemeResponse?> Function(
           InAppWebViewController controller, WebResourceRequest request)?
       onLoadResourceWithCustomScheme;
-
-  void onLoadStart(InAppWebViewController controller, WebUri? url) {
-    if (onLoadStartInternal != null) {
-      onLoadStartInternal!(this, controller, url);
-    }
-  }
-
-  void onLoadStop(InAppWebViewController controller, WebUri? url) {
-    if (onLoadStopInternal != null) {
-      onLoadStopInternal!(this, controller, url);
-    }
-  }
 
   void Function(NomoController nomoControl, InAppWebViewController controller,
       WebUri? url)? onLoadStopInternal;
 
   void Function(NomoController nomoControl, InAppWebViewController controller,
       WebUri? url)? onLoadStartInternal;
-
-  void Function(InAppWebViewController controller,
-      InAppWebViewHitTestResult hitTestResult)? onLongPressHitTestResult;
-  Future<bool?> Function(InAppWebViewController controller, WebUri? url,
-      PlatformPrintJobController? printJobController)? onPrintRequest;
-  void Function(InAppWebViewController controller, int progress)?
-      onProgressChanged;
-  Future<ClientCertResponse?> Function(InAppWebViewController controller,
-      URLAuthenticationChallenge challenge)? onReceivedClientCertRequest;
-  Future<HttpAuthResponse?> Function(InAppWebViewController controller,
-      URLAuthenticationChallenge challenge)? onReceivedHttpAuthRequest;
-
-  Future<ServerTrustAuthResponse?> Function(InAppWebViewController controller,
-      URLAuthenticationChallenge challenge)? onReceivedServerTrustAuthRequest;
-  void Function(InAppWebViewController controller, int x, int y)?
-      onScrollChanged;
-  void Function(InAppWebViewController controller, WebUri? url, bool? isReload)?
-      onUpdateVisitedHistory;
-  Future<AjaxRequest?> Function(
-          InAppWebViewController controller, AjaxRequest ajaxRequest)?
-      shouldInterceptAjaxRequest;
-  Future<FetchRequest?> Function(
-          InAppWebViewController controller, FetchRequest fetchRequest)?
-      shouldInterceptFetchRequest;
 
   Future<NavigationActionPolicy?> Function(
       NomoController nomoControl,
@@ -177,14 +83,6 @@ class NomoController {
         resources: permissionRequest.resources,
         action: PermissionResponseAction.GRANT);
   }
-
-  Future<void> Function(
-    InAppWebViewController controller,
-    MediaCaptureState? oldState,
-    MediaCaptureState? newState,
-  )? onMicrophoneCaptureStateChanged;
-  void Function(InAppWebViewController controller, Size oldContentSize,
-      Size newContentSize)? onContentSizeChanged;
 
   Future<dynamic> evaluateJavascript(
       {required String source, ContentWorld? contentWorld}) {
