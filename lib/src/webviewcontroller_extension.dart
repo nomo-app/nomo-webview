@@ -265,35 +265,6 @@ class NomoController {
         .evaluateJavascript(source: source, contentWorld: contentWorld);
   }
 
-  Future<void> injectJavascriptFileFromUrl(
-      {required WebUri urlFile,
-      ScriptHtmlTagAttributes? scriptHtmlTagAttributes}) {
-    return inAppController!.injectJavascriptFileFromUrl(
-        urlFile: urlFile, scriptHtmlTagAttributes: scriptHtmlTagAttributes);
-  }
-
-  Future<dynamic> injectJavascriptFileFromAsset(
-      {required String assetFilePath}) {
-    return inAppController!
-        .injectJavascriptFileFromAsset(assetFilePath: assetFilePath);
-  }
-
-  Future<void> injectCSSCode({required String source}) {
-    return inAppController!.injectCSSCode(source: source);
-  }
-
-  Future<void> injectCSSFileFromUrl(
-      {required WebUri urlFile,
-      CSSLinkHtmlTagAttributes? cssLinkHtmlTagAttributes}) {
-    return inAppController!.injectCSSFileFromUrl(
-        urlFile: urlFile, cssLinkHtmlTagAttributes: cssLinkHtmlTagAttributes);
-  }
-
-  Future<void> injectCSSFileFromAsset({required String assetFilePath}) {
-    return inAppController!
-        .injectCSSFileFromAsset(assetFilePath: assetFilePath);
-  }
-
   void addJavaScriptHandler(
       {required String handlerName,
       required JavaScriptHandlerCallback callback}) {
@@ -310,132 +281,12 @@ class NomoController {
     return inAppController!.hasJavaScriptHandler(handlerName: handlerName);
   }
 
-  Future<Uint8List?> takeScreenshot(
-      {ScreenshotConfiguration? screenshotConfiguration}) {
-    return inAppController!
-        .takeScreenshot(screenshotConfiguration: screenshotConfiguration);
-  }
-
-  Future<void> setSettings({required InAppWebViewSettings settings}) {
-    return inAppController!.setSettings(settings: settings);
-  }
-
-  Future<InAppWebViewSettings?> getSettings() {
-    return inAppController!.getSettings();
-  }
-
-  Future<WebHistory?> getCopyBackForwardList() {
-    return inAppController!.getCopyBackForwardList();
-  }
-
-  Future<void> scrollTo(
-      {required int x, required int y, bool animated = false}) {
-    return inAppController!.scrollTo(x: x, y: y, animated: animated);
-  }
-
-  Future<void> scrollBy(
-      {required int x, required int y, bool animated = false}) {
-    return inAppController!.scrollBy(x: x, y: y, animated: animated);
-  }
-
-  Future<void> pauseTimers() {
-    return inAppController!.pauseTimers();
-  }
-
-  Future<void> resumeTimers() {
-    return inAppController!.resumeTimers();
-  }
-
-  Future<PrintJobController?> printCurrentPage({PrintJobSettings? settings}) {
-    return inAppController!.printCurrentPage(settings: settings);
-  }
-
-  Future<int?> getContentHeight() {
-    return inAppController!.getContentHeight();
-  }
-
-  Future<int?> getContentWidth() {
-    return inAppController!.getContentWidth();
-  }
-
-  Future<void> zoomBy({required double zoomFactor, bool animated = false}) {
-    return inAppController!.zoomBy(zoomFactor: zoomFactor, animated: animated);
-  }
-
-  Future<WebUri?> getOriginalUrl() {
-    return inAppController!.getOriginalUrl();
-  }
-
-  Future<double?> getZoomScale() {
-    return inAppController!.getZoomScale();
-  }
-
-  Future<String?> getSelectedText() {
-    return inAppController!.getSelectedText();
-  }
-
-  Future<InAppWebViewHitTestResult?> getHitTestResult() {
-    return inAppController!.getHitTestResult();
-  }
-
-  Future<void> clearFocus() {
-    return inAppController!.clearFocus();
-  }
-
-  Future<void> setContextMenu(ContextMenu? contextMenu) {
-    return inAppController!.setContextMenu(contextMenu);
-  }
-
-  Future<RequestFocusNodeHrefResult?> requestFocusNodeHref() {
-    return inAppController!.requestFocusNodeHref();
-  }
-
-  Future<RequestImageRefResult?> requestImageRef() {
-    return inAppController!.requestImageRef();
-  }
-
-  Future<List<MetaTag>> getMetaTags() {
-    return inAppController!.getMetaTags();
-  }
-
-  Future<Color?> getMetaThemeColor() {
-    return inAppController!.getMetaThemeColor();
-  }
-
-  Future<int?> getScrollX() {
-    return inAppController!.getScrollX();
-  }
-
-  Future<int?> getScrollY() {
-    return inAppController!.getScrollY();
-  }
-
-  Future<SslCertificate?> getCertificate() {
-    return inAppController!.getCertificate();
-  }
-
   Future<void> addUserScript({required UserScript userScript}) {
     return inAppController!.addUserScript(userScript: userScript);
   }
 
   Future<void> addUserScripts({required List<UserScript> userScripts}) {
     return inAppController!.addUserScripts(userScripts: userScripts);
-  }
-
-  Future<bool> removeUserScript({required UserScript userScript}) {
-    return inAppController!.removeUserScript(userScript: userScript);
-  }
-
-  Future<void> removeUserScriptsByGroupName({required String groupName}) {
-    return inAppController!.removeUserScriptsByGroupName(groupName: groupName);
-  }
-
-  Future<void> removeUserScripts({required List<UserScript> userScripts}) {
-    return inAppController!.removeUserScripts(userScripts: userScripts);
-  }
-
-  Future<void> removeAllUserScripts() {
-    return inAppController!.removeAllUserScripts();
   }
 
   bool hasUserScript({required UserScript userScript}) {
@@ -458,146 +309,12 @@ class NomoController {
         .saveWebArchive(filePath: filePath, autoname: autoname);
   }
 
-  Future<bool> isSecureContext() {
-    return inAppController!.isSecureContext();
-  }
-
-  Future<WebMessageChannel?> createWebMessageChannel() {
-    return inAppController!.createWebMessageChannel();
-  }
-
-  Future<void> postWebMessage(
-      {required WebMessage message, WebUri? targetOrigin}) {
-    return inAppController!
-        .postWebMessage(message: message, targetOrigin: targetOrigin);
-  }
-
-  Future<void> addWebMessageListener(WebMessageListener webMessageListener) {
-    return inAppController!.addWebMessageListener(webMessageListener);
-  }
-
-  bool hasWebMessageListener(WebMessageListener webMessageListener) {
-    return inAppController!.hasWebMessageListener(webMessageListener);
-  }
-
-  Future<bool> canScrollVertically() {
-    return inAppController!.canScrollVertically();
-  }
-
-  Future<bool> canScrollHorizontally() {
-    return inAppController!.canScrollHorizontally();
-  }
-
-  Future<bool> startSafeBrowsing() {
-    return inAppController!.startSafeBrowsing();
-  }
-
-  Future<void> clearSslPreferences() {
-    return inAppController!.clearSslPreferences();
-  }
-
-  Future<void> pause() {
-    return inAppController!.pause();
-  }
-
-  Future<void> resume() {
-    return inAppController!.resume();
-  }
-
-  Future<bool> pageDown({required bool bottom}) {
-    return inAppController!.pageDown(bottom: bottom);
-  }
-
-  Future<bool> pageUp({required bool top}) {
-    return inAppController!.pageUp(top: top);
-  }
-
-  Future<bool> zoomIn() {
-    return inAppController!.zoomIn();
-  }
-
-  Future<bool> zoomOut() {
-    return inAppController!.zoomOut();
-  }
-
-  Future<void> clearHistory() {
-    return inAppController!.clearHistory();
-  }
-
-  Future<void> clearFormData() {
-    return inAppController!.clearFormData();
-  }
-
-  Future<void> reloadFromOrigin() {
-    return inAppController!.reloadFromOrigin();
-  }
-
   Future<Uint8List?> createPdf(
       {@Deprecated(
           "Use pdfConfiguration instead") /* ignore: deprecated_member_use_from_same_package*/
       IOSWKPDFConfiguration? iosWKPdfConfiguration,
       PDFConfiguration? pdfConfiguration}) {
     return inAppController!.createPdf(pdfConfiguration: pdfConfiguration);
-  }
-
-  Future<Uint8List?> createWebArchiveData() {
-    return inAppController!.createWebArchiveData();
-  }
-
-  Future<bool> hasOnlySecureContent() {
-    return inAppController!.hasOnlySecureContent();
-  }
-
-  Future<void> pauseAllMediaPlayback() {
-    return inAppController!.pauseAllMediaPlayback();
-  }
-
-  Future<void> setAllMediaPlaybackSuspended({required bool suspended}) {
-    return inAppController!.setAllMediaPlaybackSuspended(suspended: suspended);
-  }
-
-  Future<void> closeAllMediaPresentations() {
-    return inAppController!.closeAllMediaPresentations();
-  }
-
-  Future<MediaPlaybackState?> requestMediaPlaybackState() {
-    return inAppController!.requestMediaPlaybackState();
-  }
-
-  Future<bool> isInFullscreen() {
-    return inAppController!.isInFullscreen();
-  }
-
-  Future<MediaCaptureState?> getCameraCaptureState() {
-    return inAppController!.getCameraCaptureState();
-  }
-
-  Future<void> setCameraCaptureState({required MediaCaptureState state}) {
-    return inAppController!.setCameraCaptureState(state: state);
-  }
-
-  Future<MediaCaptureState?> getMicrophoneCaptureState() {
-    return inAppController!.getMicrophoneCaptureState();
-  }
-
-  Future<void> setMicrophoneCaptureState({required MediaCaptureState state}) {
-    return inAppController!.setMicrophoneCaptureState(state: state);
-  }
-
-  Future<void> loadSimulatedRequest(
-      {required URLRequest urlRequest,
-      required Uint8List data,
-      URLResponse? urlResponse}) {
-    return inAppController!.loadSimulatedRequest(
-        urlRequest: urlRequest, data: data, urlResponse: urlResponse);
-  }
-
-  Future<String?> getIFrameId() {
-    return inAppController!.getIFrameId();
-  }
-
-  dynamic getViewId() {
-    return inAppController!.getViewId();
   }
 
   Future<void> loadData(
@@ -616,59 +333,9 @@ class NomoController {
         allowingReadAccessTo: allowingReadAccessTo);
   }
 
-  Future<String> getDefaultUserAgent() {
-    return InAppWebViewController.getDefaultUserAgent();
-  }
-
-  Future<void> clearClientCertPreferences() {
-    return InAppWebViewController.clearClientCertPreferences();
-  }
-
-  Future<WebUri?> getSafeBrowsingPrivacyPolicyUrl() {
-    return InAppWebViewController.getSafeBrowsingPrivacyPolicyUrl();
-  }
-
-  Future<bool> setSafeBrowsingAllowlist({required List<String> hosts}) {
-    return InAppWebViewController.setSafeBrowsingAllowlist(hosts: hosts);
-  }
-
-  Future<WebViewPackageInfo?> getCurrentWebViewPackage() {
-    return InAppWebViewController.getCurrentWebViewPackage();
-  }
-
   Future<void> setWebContentsDebuggingEnabled(bool debuggingEnabled) {
     return InAppWebViewController.setWebContentsDebuggingEnabled(
         debuggingEnabled);
-  }
-
-  Future<String?> getVariationsHeader() {
-    return InAppWebViewController.getVariationsHeader();
-  }
-
-  Future<bool> isMultiProcessEnabled() {
-    return InAppWebViewController.isMultiProcessEnabled();
-  }
-
-  Future<void> disableWebView() {
-    return InAppWebViewController.disableWebView();
-  }
-
-  Future<bool> handlesURLScheme(String urlScheme) {
-    return InAppWebViewController.handlesURLScheme(urlScheme);
-  }
-
-  Future<void> disposeKeepAlive(InAppWebViewKeepAlive keepAlive) {
-    return InAppWebViewController.disposeKeepAlive(keepAlive);
-  }
-
-  Future<void> clearAllCache({bool includeDiskFiles = true}) {
-    return InAppWebViewController.clearAllCache(
-        includeDiskFiles: includeDiskFiles);
-  }
-
-  Future<void> clearCache() {
-    // ignore: deprecated_member_use
-    return inAppController!.clearCache();
   }
 
   void dispose({bool isKeepAlive = false}) {
