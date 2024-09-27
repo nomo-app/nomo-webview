@@ -142,20 +142,6 @@ class NomoController {
       URLAuthenticationChallenge challenge)? onReceivedClientCertRequest;
   Future<HttpAuthResponse?> Function(InAppWebViewController controller,
       URLAuthenticationChallenge challenge)? onReceivedHttpAuthRequest;
-  /*    
-  Future<HttpAuthResponse?> onReceivedHttpAuthRequest(
-      InAppWebViewController controller,
-      URLAuthenticationChallenge challenge) async {
-    if (challenge.protectionSpace.authenticationMethod?.toValue() ==
-        "URLAuthenticationMethodHTTPBasic") {
-      //open dialog
-      return HttpAuthResponse(
-          action: HttpAuthResponseAction.PROCEED,
-          username: "from dialog",
-          password: "from dialog");
-    }
-    return HttpAuthResponse();
-  }*/
 
   Future<ServerTrustAuthResponse?> Function(InAppWebViewController controller,
       URLAuthenticationChallenge challenge)? onReceivedServerTrustAuthRequest;
@@ -184,11 +170,6 @@ class NomoController {
         : NavigationActionPolicy.ALLOW;
   }
 
-  void Function(InAppWebViewController controller)? onEnterFullscreen;
-  void Function(InAppWebViewController controller)? onExitFullscreen;
-  void Function(InAppWebViewController controller, int x, int y, bool clampedX,
-      bool clampedY)? onOverScrolled;
-
   Future<PermissionResponse?> onPermissionRequest(
       InAppWebViewController controller,
       PermissionRequest permissionRequest) async {
@@ -205,60 +186,6 @@ class NomoController {
   void Function(InAppWebViewController controller, Size oldContentSize,
       Size newContentSize)? onContentSizeChanged;
 
-  Future<void> loadUrl(
-      {required URLRequest urlRequest, WebUri? allowingReadAccessTo}) {
-    return inAppController!.loadUrl(
-        urlRequest: urlRequest, allowingReadAccessTo: allowingReadAccessTo);
-  }
-
-  Future<void> postUrl({required WebUri url, required Uint8List postData}) {
-    return inAppController!.postUrl(url: url, postData: postData);
-  }
-
-  Future<void> loadFile({required String assetFilePath}) {
-    return inAppController!.loadFile(assetFilePath: assetFilePath);
-  }
-
-  Future<void> reload() {
-    return inAppController!.reload();
-  }
-
-  Future<void> goBack() {
-    return inAppController!.goBack();
-  }
-
-  Future<bool> canGoBack() {
-    return inAppController!.canGoBack();
-  }
-
-  Future<void> goForward() {
-    return inAppController!.goForward();
-  }
-
-  Future<bool> canGoForward() {
-    return inAppController!.canGoForward();
-  }
-
-  Future<void> goBackOrForward({required int steps}) {
-    return inAppController!.goBackOrForward(steps: steps);
-  }
-
-  Future<bool> canGoBackOrForward({required int steps}) {
-    return inAppController!.canGoBackOrForward(steps: steps);
-  }
-
-  Future<void> goTo({required WebHistoryItem historyItem}) {
-    return inAppController!.goTo(historyItem: historyItem);
-  }
-
-  Future<bool> isLoading() {
-    return inAppController!.isLoading();
-  }
-
-  Future<void> stopLoading() {
-    return inAppController!.stopLoading();
-  }
-
   Future<dynamic> evaluateJavascript(
       {required String source, ContentWorld? contentWorld}) {
     return inAppController!
@@ -272,74 +199,9 @@ class NomoController {
         .addJavaScriptHandler(handlerName: handlerName, callback: callback);
   }
 
-  JavaScriptHandlerCallback? removeJavaScriptHandler(
-      {required String handlerName}) {
-    return inAppController!.removeJavaScriptHandler(handlerName: handlerName);
-  }
-
-  bool hasJavaScriptHandler({required String handlerName}) {
-    return inAppController!.hasJavaScriptHandler(handlerName: handlerName);
-  }
-
-  Future<void> addUserScript({required UserScript userScript}) {
-    return inAppController!.addUserScript(userScript: userScript);
-  }
-
-  Future<void> addUserScripts({required List<UserScript> userScripts}) {
-    return inAppController!.addUserScripts(userScripts: userScripts);
-  }
-
-  bool hasUserScript({required UserScript userScript}) {
-    return inAppController!.hasUserScript(userScript: userScript);
-  }
-
-  Future<CallAsyncJavaScriptResult?> callAsyncJavaScript(
-      {required String functionBody,
-      Map<String, dynamic> arguments = const <String, dynamic>{},
-      ContentWorld? contentWorld}) {
-    return inAppController!.callAsyncJavaScript(
-        functionBody: functionBody,
-        arguments: arguments,
-        contentWorld: contentWorld);
-  }
-
-  Future<String?> saveWebArchive(
-      {required String filePath, bool autoname = false}) {
-    return inAppController!
-        .saveWebArchive(filePath: filePath, autoname: autoname);
-  }
-
-  Future<Uint8List?> createPdf(
-      {@Deprecated(
-          "Use pdfConfiguration instead") /* ignore: deprecated_member_use_from_same_package*/
-      IOSWKPDFConfiguration? iosWKPdfConfiguration,
-      PDFConfiguration? pdfConfiguration}) {
-    return inAppController!.createPdf(pdfConfiguration: pdfConfiguration);
-  }
-
-  Future<void> loadData(
-      {required String data,
-      String mimeType = "text/html",
-      String encoding = "utf8",
-      WebUri? baseUrl,
-      WebUri? historyUrl,
-      WebUri? allowingReadAccessTo}) {
-    return inAppController!.loadData(
-        data: data,
-        mimeType: mimeType,
-        encoding: encoding,
-        baseUrl: baseUrl,
-        historyUrl: historyUrl,
-        allowingReadAccessTo: allowingReadAccessTo);
-  }
-
   Future<void> setWebContentsDebuggingEnabled(bool debuggingEnabled) {
     return InAppWebViewController.setWebContentsDebuggingEnabled(
         debuggingEnabled);
-  }
-
-  void dispose({bool isKeepAlive = false}) {
-    return inAppController!.dispose(isKeepAlive: isKeepAlive = false);
   }
 
   void updateBuildContext(BuildContext context) {
