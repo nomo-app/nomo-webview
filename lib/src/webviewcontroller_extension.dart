@@ -15,76 +15,17 @@ class NomoController {
   InAppWebViewController? inAppController;
   int? localServerPort;
 
-  NomoController(
-      {this.initialSettings,
-      this.localServerPort,
-      this.gestureRecognizers,
-      this.windowId,
-      this.headlessWebView,
-      this.preventGestureDelay,
-      this.layoutDirection,
-      this.initialData,
-      this.initialFile,
-      this.initialUrlRequest,
-      this.initialUserScripts,
-      this.pullToRefreshController,
-      this.findInteractionController,
-      this.contextMenu,
-      this.onWebviewInit,
-      this.onPageCommitVisible,
-      this.onTitleChanged,
-      this.onAjaxProgress,
-      this.onAjaxReadyStateChange,
-      this.onCreateWindow,
-      this.onCloseWindow,
-      this.onWindowFocus,
-      this.onWindowBlur,
-      this.onDownloadStartRequest,
-      this.onJsAlert,
-      this.onJsConfirm,
-      this.onJsPrompt,
-      this.onReceivedError,
-      this.onReceivedHttpError,
-      this.onLoadResource,
-      this.onLoadResourceWithCustomScheme,
-      this.onLoadStopInternal,
-      this.onLoadStartInternal,
-      this.onLongPressHitTestResult,
-      this.onPrintRequest,
-      this.onProgressChanged,
-      this.onReceivedClientCertRequest,
-      this.onReceivedHttpAuthRequest,
-      this.onReceivedServerTrustAuthRequest,
-      this.onScrollChanged,
-      this.onUpdateVisitedHistory,
-      this.shouldInterceptAjaxRequest,
-      this.shouldInterceptFetchRequest,
-      this.shouldOverrideUrlLoadingInternal,
-      this.onEnterFullscreen,
-      this.onExitFullscreen,
-      this.onOverScrolled,
-      this.onZoomScaleChanged,
-      this.onDidReceiveServerRedirectForProvisionalNavigation,
-      this.onFormResubmission,
-      this.onGeolocationPermissionsHidePrompt,
-      this.onGeolocationPermissionsShowPrompt,
-      this.onJsBeforeUnload,
-      this.onNavigationResponse,
-      this.onReceivedIcon,
-      this.onReceivedLoginRequest,
-      this.onPermissionRequestCanceled,
-      this.onRequestFocus,
-      this.onReceivedTouchIconUrl,
-      this.onRenderProcessGone,
-      this.onRenderProcessResponsive,
-      this.onRenderProcessUnresponsive,
-      this.onSafeBrowsingHit,
-      this.onWebContentProcessDidTerminate,
-      this.shouldAllowDeprecatedTLS,
-      this.shouldInterceptRequest,
-      this.onCameraCaptureStateChanged,
-      this.onMicrophoneCaptureStateChanged,
-      this.onContentSizeChanged});
+  NomoController({
+    this.initialSettings,
+    this.initialUrlRequest,
+    this.initialUserScripts,
+    this.onWebviewInit,
+    this.onDownloadStartRequest,
+    this.onReceivedHttpError,
+    this.onLoadResourceWithCustomScheme,
+    this.onLoadStopInternal,
+    this.shouldOverrideUrlLoadingInternal,
+  });
 
   final keepAlive = InAppWebViewKeepAlive();
   //InAppWebViewKeepAlive? keepAlive;
@@ -229,12 +170,17 @@ class NomoController {
           InAppWebViewController controller, FetchRequest fetchRequest)?
       shouldInterceptFetchRequest;
 
-  Future<NavigationActionPolicy?> Function(NomoController nomoControl, InAppWebViewController controller, NavigationAction navigationAction)? shouldOverrideUrlLoadingInternal;
+  Future<NavigationActionPolicy?> Function(
+      NomoController nomoControl,
+      InAppWebViewController controller,
+      NavigationAction navigationAction)? shouldOverrideUrlLoadingInternal;
 
-  Future<NavigationActionPolicy?> shouldOverrideUrlLoading (
-          InAppWebViewController controller, NavigationAction navigationAction) async {
+  Future<NavigationActionPolicy?> shouldOverrideUrlLoading(
+      InAppWebViewController controller,
+      NavigationAction navigationAction) async {
     return shouldOverrideUrlLoadingInternal != null
-        ? await shouldOverrideUrlLoadingInternal!(this, controller, navigationAction)
+        ? await shouldOverrideUrlLoadingInternal!(
+            this, controller, navigationAction)
         : NavigationActionPolicy.ALLOW;
   }
 
@@ -242,22 +188,6 @@ class NomoController {
   void Function(InAppWebViewController controller)? onExitFullscreen;
   void Function(InAppWebViewController controller, int x, int y, bool clampedX,
       bool clampedY)? onOverScrolled;
-  void Function(
-          InAppWebViewController controller, double oldScale, double newScale)?
-      onZoomScaleChanged;
-  void Function(InAppWebViewController controller)?
-      onDidReceiveServerRedirectForProvisionalNavigation;
-  Future<FormResubmissionAction?> Function(
-      InAppWebViewController controller, WebUri? url)? onFormResubmission;
-  void Function(InAppWebViewController controller)?
-      onGeolocationPermissionsHidePrompt;
-  Future<GeolocationPermissionShowPromptResponse?> Function(
-          InAppWebViewController controller, String origin)?
-      onGeolocationPermissionsShowPrompt;
-  Future<JsBeforeUnloadResponse?> Function(InAppWebViewController controller,
-      JsBeforeUnloadRequest jsBeforeUnloadRequest)? onJsBeforeUnload;
-  Future<NavigationResponseAction?> Function(InAppWebViewController controller,
-      NavigationResponse navigationResponse)? onNavigationResponse;
 
   Future<PermissionResponse?> onPermissionRequest(
       InAppWebViewController controller,
@@ -267,40 +197,6 @@ class NomoController {
         action: PermissionResponseAction.GRANT);
   }
 
-  void Function(InAppWebViewController controller, Uint8List icon)?
-      onReceivedIcon;
-  void Function(InAppWebViewController controller, LoginRequest loginRequest)?
-      onReceivedLoginRequest;
-  void Function(InAppWebViewController controller,
-      PermissionRequest permissionRequest)? onPermissionRequestCanceled;
-  void Function(InAppWebViewController controller)? onRequestFocus;
-  void Function(
-          InAppWebViewController controller, WebUri url, bool precomposed)?
-      onReceivedTouchIconUrl;
-  void Function(
-          InAppWebViewController controller, RenderProcessGoneDetail detail)?
-      onRenderProcessGone;
-  Future<WebViewRenderProcessAction?> Function(
-          InAppWebViewController controller, WebUri? url)?
-      onRenderProcessResponsive;
-  Future<WebViewRenderProcessAction?> Function(
-          InAppWebViewController controller, WebUri? url)?
-      onRenderProcessUnresponsive;
-  Future<SafeBrowsingResponse?> Function(InAppWebViewController controller,
-      WebUri url, SafeBrowsingThreat? threatType)? onSafeBrowsingHit;
-  void Function(InAppWebViewController controller)?
-      onWebContentProcessDidTerminate;
-  Future<ShouldAllowDeprecatedTLSAction?> Function(
-      InAppWebViewController controller,
-      URLAuthenticationChallenge challenge)? shouldAllowDeprecatedTLS;
-  Future<WebResourceResponse?> Function(
-          InAppWebViewController controller, WebResourceRequest request)?
-      shouldInterceptRequest;
-  Future<void> Function(
-    InAppWebViewController controller,
-    MediaCaptureState? oldState,
-    MediaCaptureState? newState,
-  )? onCameraCaptureStateChanged;
   Future<void> Function(
     InAppWebViewController controller,
     MediaCaptureState? oldState,
@@ -308,26 +204,6 @@ class NomoController {
   )? onMicrophoneCaptureStateChanged;
   void Function(InAppWebViewController controller, Size oldContentSize,
       Size newContentSize)? onContentSizeChanged;
-
-  Future<WebUri?> getUrl() {
-    return inAppController!.getUrl();
-  }
-
-  Future<String?> getTitle() {
-    return inAppController!.getTitle();
-  }
-
-  Future<int?> getProgress() {
-    return inAppController!.getProgress();
-  }
-
-  Future<String?> getHtml() {
-    return inAppController!.getHtml();
-  }
-
-  Future<List<Favicon>> getFavicons() {
-    return inAppController!.getFavicons();
-  }
 
   Future<void> loadUrl(
       {required URLRequest urlRequest, WebUri? allowingReadAccessTo}) {
