@@ -1,14 +1,14 @@
-/*import 'package:flutter/widgets.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/widgets.dart';
 import 'package:nomo_webview/nomo_webview.dart';
 
 void initController(Uri uri) async {
-  final c = WebViewController();
+  final internalController = WebViewController();
+  final c = NomoController(c: internalController);
   c.nomoInitJsBridge(jsHandler: myJsHandler);
 
   // further configurations are possible below...
-  await c.setJavaScriptMode(JavaScriptMode.unrestricted);
-  await c.loadRequest(uri);
+  await c.c.setJavaScriptMode(JavaScriptMode.unrestricted);
+  await c.c.loadRequest(uri);
 }
 
 Future<Map<String, dynamic>> myJsHandler({
@@ -30,4 +30,4 @@ Future<Map<String, dynamic>> myJsHandler({
   } else {
     throw KnownJsHandlerError("Unknown function $functionName");
   }
-}*/
+}
