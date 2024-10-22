@@ -1,4 +1,0 @@
-[submodule "packages/flutter_inappwebview"]
-	path = packages/flutter_inappwebview
-	url = https://github.com/nomo-app/flutter_inappwebview
-    branch = master

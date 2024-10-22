@@ -1,6 +1,7 @@
-/*import 'dart:io';
+import 'dart:io';
 
 // Import for Android features.
+// ignore: depend_on_referenced_packages
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 // Import for iOS features.
@@ -18,6 +19,4 @@ void enableMobileRemoteDebugging() {
   if (Platform.isAndroid) {
     AndroidWebViewController.enableDebugging(true);
   }
-}*/
-
-//Gets handled by inAppWebview
+}
