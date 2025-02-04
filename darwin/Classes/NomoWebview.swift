@@ -13,14 +13,16 @@ import FlutterEngine
 import webview_flutter_wkwebview
 
 public class NomoWebView {
-    private FlutterEngine engine = FlutterEngineCache.getInstance().get("engine_cache");
     private Int64 webViewId;
-    public NomoWebView(viewId: Int64) {
-        webViewId = viewId;
+    private FlutterPluginRegistry registry;
+
+    public NomoWebView(viewId: Int64, byMessenger: FlutterPluginRegistry) {
+        registry = byMessenger
+        webViewId = viewId
     }
 
     public takeScreenShot() -> [UInt8] {
-        WKWebView webView = FWFWebViewFlutterWKWebViewExternalAPI.webView(idnetifier: webViewId, registry: engine.binaryMessenger);
+        WKWebView webView = FWFWebViewFlutterWKWebViewExternalAPI.webView(idnetifier: webViewId, registry: byMessenger);
         if (webView != null) {
             var imageData: Data? = nil
             webView.takeSnapshot(with: nil, completitionHandler: {(image, error) -> Void in
