@@ -25,24 +25,36 @@ public class NomoWebview {
 
     public byte[] takeScreenShot() {
         WebView webView = WebViewFlutterAndroidExternalApi.getWebView(engine, webViewId);
+        Bitmap bitmap = null;
+        ByteArrayOutputStream stream = null;
         if (webView != null) {
             int width = webView.getWidth();
             int height = webView.getHeight();
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             webView.draw(canvas);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            stream = new ByteArrayOutputStream();
             final boolean compressed = bitmap.compress(
                 Bitmap.CompressFormat.PNG,
                 100,
                 stream);
-            try {
-                stream.close();
-            } catch (IOException e) {
-                Log.e("nomo webview", "", e);
+            if (!compressed) {
+                Log.e("nomo webview", "Failed to compress bitmap");
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        Log.e("nomo webview", "", e);
+                    }
+                }
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+                return null;
             }
-            bitmap.recycle();
-
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
             return stream.toByteArray();
         }
         return null;

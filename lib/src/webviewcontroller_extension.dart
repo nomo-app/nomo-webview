@@ -81,7 +81,16 @@ class NomoController {
     });
   }
 
+  /// Takes a screenshot of the current WebView content.
+  ///
+  /// Returns a [Uint8List] containing the screenshot data in PNG format,
+  /// or null if the screenshot could not be taken.
+  /// Throws a [StateError] if the viewID is not set.
   Future<Uint8List?> takeScreenshot() {
+    if (viewID == null) {
+      throw StateError(
+          'ViewID not set. Ensure the controller is properly initialized.');
+    }
     return NomoWebviewPlatform.instance.takeScreenshot(viewID!);
   }
 

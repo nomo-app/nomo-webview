@@ -29,14 +29,27 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "app.nomo.plugin/nomo_webview")
     channel.setMethodCallHandler(this)
-    engine = FlutterEngineCache.getInstance().get("nomo_webview_engine_cached")!!
+    val cachedEngine = FlutterEngineCache.getInstance().get("nomo_webview_engine_cached")
+    if (cachedEngine == null) {
+        Log.e("NomoWebviewPlugin", "Failed to get cached engine")
+        return
+    }
+    engine = cachedEngine
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "takeScreenshot") {
-      val args = call.arguments() as Map<String?, Any?>?
-      val viewID = args?.get("viewID") as Int
-      result.success(takeScreenShot(viewID));
+      try {
+          val args = call.arguments() as? Map<String?, Any?>
+          val viewID = args?.get("viewID") as? Int
+          if (viewID == null) {
+              result.error("INVALID_ARGUMENTS", "Missing or invalid viewID", null)
+              return
+          }
+          result.success(takeScreenShot(viewID))
+      } catch (e: Exception) {
+          result.error("INVALID_ARGUMENTS", "Failed to parse arguments", e.message)
+      }
     } else if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else {
@@ -45,7 +58,10 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   private fun takeScreenShot(webViewId: Int): ByteArray {
-    if (engine == null) return ByteArray(0)
+    if (!this::engine.isInitialized) {
+        Log.e("NomoWebviewPlugin", "Engine not initialized")
+        throw IllegalStateException("Engine not initialized")
+    }
     val view = NomoWebview(webViewId, engine)
     return view.takeScreenShot()
   }
