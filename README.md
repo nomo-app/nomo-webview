@@ -80,7 +80,39 @@ Future<Map<String, dynamic>> myJsHandler({
   }
 }
 ```
+## iOS setup
 
+We need an instance of the FlutterPluginRegistry on ios to access the native webview of the underlying
+webview_flutter package.
+Add the following code to your iOS AppDelegate.swift:
+
+```
+    .
+    .
+    .
+
+    GeneratedPluginRegistrant.register(with: self)
+
+    // make sure you have not already defined controller
+    let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+    // make sure this call happens after registering the plugins
+    setNomoWebviewRegistry(registry: controller.pluginRegistry())
+```
+## Android setup
+
+We need an instance of FlutterEngine on android to access the native webview of the underlying
+webview_flutter package.
+Add the following code to youre MainActivity.kt:
+
+```
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        // make sure the next line is called before registering the plugins
+        FlutterEngineCache.getInstance().put("nomo_webview_engine_cached", flutterEngine)
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+        .
+        .
+        .
+```
 ## How to use in JavaScript
 
 Once you have integrated this package within Dart/Flutter, you can invoke Dart-functions from

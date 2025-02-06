@@ -1,18 +1,35 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:nomo_webview/nomo_webview.dart';
 import 'package:flutter/material.dart';
+
+import 'nomo_webview_platform_interface.dart';
+
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 final Map<NomoController, BuildContext> _contextMap = {};
 
 class NomoController {
   WebViewController c;
   int? localServerPort;
+  int? viewID;
 
   NomoController({
     required this.c,
-  });
+  }) {
+    if (Platform.isAndroid) {
+      final platform = c.platform as AndroidWebViewController;
+      viewID = platform.webViewIdentifier;
+    } else if (Platform.isIOS || Platform.isMacOS) {
+      final platform = c.platform as WebKitWebViewController;
+      viewID = platform.webViewIdentifier;
+    } else {
+      throw "Nomo Controller not implemented for this platform";
+    }
+  }
 
   Future<dynamic> evaluateJavascript({required String source}) {
     return c.runJavaScript(source);
@@ -62,6 +79,23 @@ class NomoController {
         context: getBuildContext(),
       );
     });
+  }
+
+  /// Takes a screenshot of the current WebView content.
+  ///
+  /// Returns a [Uint8List] containing the screenshot data in PNG format,
+  /// or null if the screenshot could not be taken.
+  /// Throws a [StateError] if the viewID is not set.
+  Future<Uint8List?> takeScreenshot() {
+    if (viewID == null) {
+      throw StateError(
+          'ViewID not set. Ensure the controller is properly initialized.');
+    }
+    return NomoWebviewPlatform.instance.takeScreenshot(viewID!);
+  }
+
+  Future<String?> getPlatformVersion() {
+    return NomoWebviewPlatform.instance.getPlatformVersion();
   }
 
   Future<dynamic> runJavaScript(String code) async {
