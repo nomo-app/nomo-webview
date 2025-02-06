@@ -18,17 +18,18 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin
 
-class NomoWebViewPlugin: FlutterPlugin, MethodCallHandler {
+class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
+  private lateinit var engine : FlutterEngine
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "app.nomo.plugin/nomo_webview")
     channel.setMethodCallHandler(this)
-    engine = flutterPluginBinding.getFlutterEngine()
+    engine = FlutterEngineCache.getInstance().get("nomo_webview_engine_cached")!!
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
@@ -44,7 +45,8 @@ class NomoWebViewPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   private fun takeScreenShot(webViewId: Int): ByteArray {
-    val view = NomoWebView(webViewId)
+    if (engine == null) return ByteArray(0)
+    val view = NomoWebview(webViewId, engine)
     return view.takeScreenShot()
   }
 

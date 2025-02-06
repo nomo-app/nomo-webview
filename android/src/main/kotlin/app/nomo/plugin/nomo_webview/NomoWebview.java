@@ -15,11 +15,12 @@ import io.flutter.embedding.engine.FlutterEngineCache;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class NomoWebView {
-    private final FlutterEngine engine = FlutterEngineCache.getInstance().get("engine_cache");
+public class NomoWebview {
     private int webViewId;
-    public NomoWebView(@NonNull int viewId) {
+    private FlutterEngine engine;
+    public NomoWebview(@NonNull int viewId, @NonNull FlutterEngine flutterEngine) {
         webViewId = viewId;
+        engine = flutterEngine;
     }
 
     public byte[] takeScreenShot() {
