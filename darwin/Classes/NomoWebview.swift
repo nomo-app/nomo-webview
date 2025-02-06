@@ -9,43 +9,35 @@ import WebKit
   #error("Unsupported platform.")
 #endif
 
-import FlutterEngine
 import webview_flutter_wkwebview
 
 public class NomoWebView {
-    private Int64 webViewId;
-    private FlutterPluginRegistry registry;
-
-    public NomoWebView(viewId: Int64, byMessenger: FlutterPluginRegistry) {
-        registry = byMessenger
-        webViewId = viewId
+    
+    var webViewId: Int
+    weak var registry: FlutterPluginRegistry?
+    
+    init(viewId: Int, registry: FlutterPluginRegistry) {
+        self.registry = registry
+        self.webViewId = viewId
+    }
+    
+    deinit {
+        //NSLog("deinit NomoWebview")
     }
 
-    public takeScreenShot() -> [UInt8] {
-        WKWebView webView = FWFWebViewFlutterWKWebViewExternalAPI.webView(idnetifier: webViewId, registry: byMessenger);
-        if (webView != null) {
-            var imageData: Data? = nil
-            webView.takeSnapshot(with: nil, completitionHandler: {(image, error) -> Void in
-            if let screenshot = image {
-                if let with = with {
-                    switch with["compressFormat"] as! String {
-                    case "JPEG":
-                        let quality = Float(with["quality"] as! Int) / 100
-                        imageData = screenshot.jpegData(compressionQuality: CGFloat(quality))
-                        break
-                    case "PNG":
-                        imageData = screenshot.pngData()
-                        break
-                    default:
-                        imageData = screenshot.pngData()
-                    }
-                }
-                else {
+    public func takeScreenShot(completionHandler: @escaping(_ screenshot: Data?) -> Void) {
+        if (registry == nil) {
+            completionHandler(nil)
+        }
+        let webView = FWFWebViewFlutterWKWebViewExternalAPI.webView(forIdentifier: webViewId, with: registry!);
+        if (webView != nil) {
+            webView?.takeSnapshot(with: nil, completionHandler: {(image, error) -> Void in
+                var imageData: Data? = nil
+                if let screenshot = image {
                     imageData = screenshot.pngData()
                 }
-            }
-        })
+                completionHandler(imageData)
+            })
         }
-        return imageData;
     }
 }

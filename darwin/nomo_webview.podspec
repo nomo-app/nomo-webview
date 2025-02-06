@@ -5,15 +5,16 @@
 Pod::Spec.new do |s|
     s.name             = 'nomo_webview'
     s.version          = '0.0.1'
-    s.summary          = 'An expansion of webview_flutter plugin'
+    s.summary          = 'An expansion on webview_flutter plugin'
     s.description      = <<-DESC
-    An expansion of webview_flutter plugin.
+    An expansion on webview_flutter plugin.
                          DESC
     s.homepage         = 'https://github.com/nomo-app/nomo-webview'
-    #s.license          = { :file => '../LICENSE' }
-    #s.author           = { 'Your Company' => 'email@example.com' }
+    s.license          = { :file => '../LICENSE' }
+    s.author           = { 'Nomo' => 'dev2@nomo.app' }
     s.source           = { :path => '.' }
     s.source_files = 'Classes/**/*'
+    s.dependency 'webview_flutter_wkwebview'
     s.dependency 'Flutter'
     s.platform = :ios, '12.0'
   

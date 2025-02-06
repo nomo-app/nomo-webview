@@ -11,13 +11,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter:
-    path: 'packages/packages/webview_flutter/webview_flutter'
-  webview_flutter_android:
-    path: 'packages/packages/webview_flutter/webview_flutter_android'
-  webview_flutter_wkwebview:
-    path: 'packages/packages/webview_flutter/webview_flutter_wkwebview'
-  plugin_platform_interface: ^2.0.2
+  webview_flutter: ^4.10.0
+  webview_flutter_android: ^4.0.0
+  webview_flutter_wkwebview: ^3.15.0
 
 dev_dependencies:
   flutter_test:
@@ -29,8 +25,10 @@ flutter:
     platforms:
       android:
         package: app.nomo.plugin.nomo_webview
-        pluginClass: NomoWebViewPlugin
+        pluginClass: NomoWebviewPlugin
       ios:
-        pluginClass: NomoWebViewPlugin
+        pluginClass: NomoWebviewPlugin
+        sharedDarwinSource: true
       macos:
-        pluginClass: NomoWebViewPlugin
+        pluginClass: NomoWebviewPlugin
+        sharedDarwinSource: true
