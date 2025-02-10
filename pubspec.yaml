@@ -29,6 +29,6 @@ flutter:
       ios:
         pluginClass: NomoWebviewPlugin
         sharedDarwinSource: true
-      macos:
-        pluginClass: NomoWebviewPlugin
-        sharedDarwinSource: true
+#      macos:
+#        pluginClass: NomoWebviewPlugin
+#        sharedDarwinSource: true
