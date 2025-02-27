@@ -37,7 +37,6 @@ Future<void> handleMessageFromJavaScript({
   required JsHandler jsHandler,
   required JsInjector jsInjector,
   BuildContext? context,
-  String? callBackFunctionName,
 }) async {
   if (kDebugMode) {
     // message can be a string of multiple megabytes; therefore do not print it in production!
@@ -74,7 +73,6 @@ Future<void> handleMessageFromJavaScript({
         promiseStatus: "reject",
         invocationID: invocationID.isEmpty ? "-1" : invocationID,
         jsInjector: jsInjector,
-        callBackFunctionName: callBackFunctionName,
       );
       return;
     }
@@ -89,12 +87,10 @@ Future<void> handleMessageFromJavaScript({
         argsFromDart: argsFromDart,
         context: context);
     await _sendResultToJavaScript(
-      result: result,
-      promiseStatus: "resolve",
-      invocationID: invocationID,
-      jsInjector: jsInjector,
-      callBackFunctionName: callBackFunctionName,
-    );
+        result: result,
+        promiseStatus: "resolve",
+        invocationID: invocationID,
+        jsInjector: jsInjector);
   } catch (e, s) {
     final String
         resultError; // give errors as raw string instead of objects to make console.error work in JavaScript
@@ -115,7 +111,6 @@ Future<void> handleMessageFromJavaScript({
       promiseStatus: "reject",
       invocationID: invocationID,
       jsInjector: jsInjector,
-      callBackFunctionName: callBackFunctionName,
     );
   }
 }
@@ -125,7 +120,6 @@ Future<void> _sendResultToJavaScript({
   required String promiseStatus,
   required String invocationID,
   required JsInjector jsInjector,
-  String? callBackFunctionName,
 }) async {
   final Map<String, dynamic> resultMap = {
     "status": promiseStatus,
@@ -136,8 +130,7 @@ Future<void> _sendResultToJavaScript({
   final responseBytes = utf8.encode(responseJson);
   final responseBase64 = base64.encode(responseBytes);
 
-  final returnForJs =
-      '${callBackFunctionName ?? "fulfillPromiseFromFlutter"}(\'$responseBase64\')';
+  final returnForJs = 'fulfillPromiseFromFlutter(\'$responseBase64\')';
 
   await jsInjector(returnForJs);
 }
