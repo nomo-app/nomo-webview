@@ -9,6 +9,7 @@ import 'nomo_webview_platform_interface.dart';
 
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:file_picker/file_picker.dart';
 
 final Map<NomoController, BuildContext> _contextMap = {};
 
@@ -23,6 +24,30 @@ class NomoController {
     if (Platform.isAndroid) {
       final platform = c.platform as AndroidWebViewController;
       viewID = platform.webViewIdentifier;
+      platform.setOnShowFileSelector((params) async {
+        FilePickerResult? result;
+        switch (params.mode) {
+          case (FileSelectorMode.open):
+            result = await FilePicker.platform.pickFiles(allowMultiple: false);
+            break;
+          case (FileSelectorMode.openMultiple):
+            result = await FilePicker.platform.pickFiles(allowMultiple: true);
+            break;
+          case (FileSelectorMode.save):
+          default:
+        }
+        if (result != null) {
+          List<String> paths = [];
+          for (String? path in result.paths) {
+            if (!path!.startsWith("file://"))
+              path = "file://" + path;
+            paths.add(path);
+          }
+          return paths;
+        }
+        return [];
+      }
+    );
     } else if (Platform.isIOS || Platform.isMacOS) {
       final platform = c.platform as WebKitWebViewController;
       viewID = platform.webViewIdentifier;
@@ -78,7 +103,7 @@ class NomoController {
         // we prefer the context from the last build because we assume it is more likely to be valid
         context: getBuildContext(),
       );
-    });
+    },);
   }
 
   /// Takes a screenshot of the current WebView content.
@@ -89,7 +114,7 @@ class NomoController {
   Future<Uint8List?> takeScreenshot() {
     if (viewID == null) {
       throw StateError(
-          'ViewID not set. Ensure the controller is properly initialized.');
+          'ViewID not set. Ensure the controller is properly initialized.',);
     }
     return NomoWebviewPlatform.instance.takeScreenshot(viewID!);
   }
