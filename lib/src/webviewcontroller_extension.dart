@@ -33,7 +33,6 @@ class NomoController {
           case (FileSelectorMode.openMultiple):
             result = await FilePicker.platform.pickFiles(allowMultiple: true);
             break;
-          case (FileSelectorMode.save):
           default:
         }
         if (result != null) {
