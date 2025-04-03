@@ -86,14 +86,15 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
     val view = NomoWebview(webViewId, engine)
     view.setDownloadListener({webViewId, url, userAgent, contentDisposition, mimeType, guessedFileName, contentLength ->
       channel.invokeMethod("onDownloadStart", mapOf(
-        "webViewId" to webViewId,
-        "url" to url,
-        "userAgent" to userAgent,
-        "contentDisposition" to contentDisposition,
-        "mimeType" to mimeType,
-        "guessedFileName" to guessedFileName,
-        "contentLength" to contentLength,
-      ))
+          "webViewId" to webViewId,
+          "url" to url,
+          "userAgent" to userAgent,
+          "contentDisposition" to contentDisposition,
+          "mimeType" to mimeType,
+          "guessedFileName" to guessedFileName,
+          "contentLength" to contentLength,
+        ))
+      })
     return null;
   }
 
