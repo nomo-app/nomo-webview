@@ -50,6 +50,18 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
       } catch (e: Exception) {
           result.error("INVALID_ARGUMENTS", "Failed to parse arguments", e.message)
       }
+    } else if (call.method == "setDownloadListener") {
+      try {
+        val args = call.arguments() as? Map<String?, Any?>
+        val viewID = args?.get("viewID") as? Int
+        if (viewID == null) {
+            result.error("INVALID_ARGUMENTS", "Missing or invalid viewID", null)
+            return
+        }
+        result.success(setDownloadListener(viewID))
+      } catch (e: Exception) {
+          result.error("INVALID_ARGUMENTS", "Failed to parse arguments", e.message)
+      }
     } else if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else {
@@ -64,6 +76,25 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
     }
     val view = NomoWebview(webViewId, engine)
     return view.takeScreenShot()
+  }
+
+  private fun setDownloadListener(webViewId: Int): Void? {
+    if (!this::engine.isInitialized) {
+        Log.e("NomoWebviewPlugin", "Engine not initialized")
+        throw IllegalStateException("Engine not initialized")
+    }
+    val view = NomoWebview(webViewId, engine)
+    view.setDownloadListener({webViewId, url, userAgent, contentDisposition, mimeType, guessedFileName, contentLength ->
+      channel.invokeMethod("onDownloadStart", mapOf(
+        "webViewId" to webViewId,
+        "url" to url,
+        "userAgent" to userAgent,
+        "contentDisposition" to contentDisposition,
+        "mimeType" to mimeType,
+        "guessedFileName" to guessedFileName,
+        "contentLength" to contentLength,
+      ))
+    return null;
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {

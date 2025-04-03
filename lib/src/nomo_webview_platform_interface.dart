@@ -1,3 +1,4 @@
+import 'package:nomo_webview/nomo_webview.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -25,8 +26,17 @@ abstract class NomoWebviewPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  void init() {
+    throw UnimplementedError('init() has not been implemented.');
+  }
+
   Future<Uint8List?> takeScreenshot(int viewID) {
     throw UnimplementedError('takeScreenshot() has not been implemented.');
+  }
+
+  Future<void> setDownloadListener(
+      int viewID, DownloadStartCb onDownloadStart) {
+    throw UnimplementedError('setDownloadListener() has not been implemented.');
   }
 
   Future<String?> getPlatformVersion() {

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:nomo_webview/nomo_webview.dart';
@@ -10,6 +11,15 @@ import 'nomo_webview_platform_interface.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:file_picker/file_picker.dart';
+
+typedef DownloadStartCb = void Function(
+    int viewId,
+    String url,
+    String userAgent,
+    String contentDisposition,
+    String mimeType,
+    String guessedFileName,
+    int contentLength);
 
 final Map<NomoController, BuildContext> _contextMap = {};
 
@@ -24,35 +34,14 @@ class NomoController {
     if (Platform.isAndroid) {
       final platform = c.platform as AndroidWebViewController;
       viewID = platform.webViewIdentifier;
-      platform.setOnShowFileSelector((params) async {
-        FilePickerResult? result;
-        switch (params.mode) {
-          case (FileSelectorMode.open):
-            result = await FilePicker.platform.pickFiles(allowMultiple: false);
-            break;
-          case (FileSelectorMode.openMultiple):
-            result = await FilePicker.platform.pickFiles(allowMultiple: true);
-            break;
-          default:
-        }
-        if (result != null) {
-          List<String> paths = [];
-          for (String? path in result.paths) {
-            if (!path!.startsWith("file://"))
-              path = "file://" + path;
-            paths.add(path);
-          }
-          return paths;
-        }
-        return [];
-      }
-    );
+      platform.setOnShowFileSelector(onShowFileSelector);
     } else if (Platform.isIOS || Platform.isMacOS) {
       final platform = c.platform as WebKitWebViewController;
       viewID = platform.webViewIdentifier;
     } else {
       throw "Nomo Controller not implemented for this platform";
     }
+    NomoWebviewPlatform.instance.init();
   }
 
   Future<dynamic> evaluateJavascript({required String source}) {
@@ -88,21 +77,24 @@ class NomoController {
       await evaluateJavascript(source: jsCode);
     }
 
-    c.addJavaScriptChannel('NOMOJSChannel', onMessageReceived: (message) async {
-      // https://stackoverflow.com/questions/53689662/flutter-webview-two-way-communication-with-javascript
-      final messageFromJs = message.message;
-      if (rawMessageHandler != null) {
-        rawMessageHandler(messageFromJs);
-      }
-      handleMessageFromJavaScript(
-        messageFromJs: messageFromJs,
-        argsFromDart: argsFromDart,
-        jsHandler: jsHandler,
-        jsInjector: jsInjector,
-        // we prefer the context from the last build because we assume it is more likely to be valid
-        context: getBuildContext(),
-      );
-    },);
+    c.addJavaScriptChannel(
+      'NOMOJSChannel',
+      onMessageReceived: (message) async {
+        // https://stackoverflow.com/questions/53689662/flutter-webview-two-way-communication-with-javascript
+        final messageFromJs = message.message;
+        if (rawMessageHandler != null) {
+          rawMessageHandler(messageFromJs);
+        }
+        handleMessageFromJavaScript(
+          messageFromJs: messageFromJs,
+          argsFromDart: argsFromDart,
+          jsHandler: jsHandler,
+          jsInjector: jsInjector,
+          // we prefer the context from the last build because we assume it is more likely to be valid
+          context: context, //getBuildContext(),
+        );
+      },
+    );
   }
 
   /// Takes a screenshot of the current WebView content.
@@ -113,9 +105,20 @@ class NomoController {
   Future<Uint8List?> takeScreenshot() {
     if (viewID == null) {
       throw StateError(
-          'ViewID not set. Ensure the controller is properly initialized.',);
+        'ViewID not set. Ensure the controller is properly initialized.',
+      );
     }
     return NomoWebviewPlatform.instance.takeScreenshot(viewID!);
+  }
+
+  Future<void> setDownloadListener(DownloadStartCb onDownloadStart) {
+    if (viewID == null) {
+      throw StateError(
+        'ViewID not set. Ensure the controller is properly initialized.',
+      );
+    }
+    return NomoWebviewPlatform.instance
+        .setDownloadListener(viewID!, onDownloadStart);
   }
 
   Future<String?> getPlatformVersion() {
@@ -124,5 +127,27 @@ class NomoController {
 
   Future<dynamic> runJavaScript(String code) async {
     return await evaluateJavascript(source: code);
+  }
+
+  Future<List<String>> onShowFileSelector(params) async {
+    FilePickerResult? result;
+    switch (params.mode) {
+      case (FileSelectorMode.open):
+        result = await FilePicker.platform.pickFiles(allowMultiple: false);
+        break;
+      case (FileSelectorMode.openMultiple):
+        result = await FilePicker.platform.pickFiles(allowMultiple: true);
+        break;
+      default:
+    }
+    if (result != null) {
+      List<String> paths = [];
+      for (String? path in result.paths) {
+        if (!path!.startsWith("file://")) path = "file://" + path;
+        paths.add(path);
+      }
+      return paths;
+    }
+    return [];
   }
 }
