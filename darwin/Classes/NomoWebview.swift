@@ -31,7 +31,7 @@ public class NomoWebView {
             completionHandler(nil)
             return
         }
-        guard let webView = FWFWebViewFlutterWKWebViewExternalAPI.webView(forIdentifier: webViewId, with: registry) else {
+        guard let webView = FWFWebViewFlutterWKWebViewExternalAPI.webView(forIdentifier: Int64(webViewId), withPluginRegistry: registry) else {
             NSLog("WebView not found for ID: \(webViewId)")
             completionHandler(nil)
             return
