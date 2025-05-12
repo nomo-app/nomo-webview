@@ -36,7 +36,7 @@ public class NomoWebView {
             completionHandler(nil)
             return
          }
-        webView.takeSnapshot(with: nil, completionHandler: {(image, error) -> Void in
+        webView.takeSnapshot(with: Optional<WKSnapshotConfiguration>.none, completionHandler: {(image, error) -> Void in
             if let error = error {
                 NSLog("Screenshot failed: \(error.localizedDescription)")
                 completionHandler(nil)
