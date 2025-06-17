@@ -12,14 +12,8 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:file_picker/file_picker.dart';
 
-typedef DownloadStartCb = void Function(
-    int viewId,
-    String url,
-    String userAgent,
-    String contentDisposition,
-    String mimeType,
-    String guessedFileName,
-    int contentLength);
+typedef DownloadStartCb = void Function(int viewId, String url, String userAgent,
+    String contentDisposition, String mimeType, String guessedFileName, int contentLength);
 
 final Map<NomoController, BuildContext> _contextMap = {};
 
@@ -90,8 +84,6 @@ class NomoController {
           argsFromDart: argsFromDart,
           jsHandler: jsHandler,
           jsInjector: jsInjector,
-          // we prefer the context from the last build because we assume it is more likely to be valid
-          context: context, //getBuildContext(),
         );
       },
     );
@@ -117,8 +109,7 @@ class NomoController {
         'ViewID not set. Ensure the controller is properly initialized.',
       );
     }
-    return NomoWebviewPlatform.instance
-        .setDownloadListener(viewID!, onDownloadStart);
+    return NomoWebviewPlatform.instance.setDownloadListener(viewID!, onDownloadStart);
   }
 
   Future<String?> getPlatformVersion() {

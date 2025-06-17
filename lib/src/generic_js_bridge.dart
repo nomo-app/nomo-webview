@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 
 /// generic_js_bridge.dart does not depend on any particular WebView implementation.
 
@@ -24,7 +23,6 @@ typedef JsHandler = Future<Map<String, dynamic>> Function({
   required String functionName,
   required Map<String, dynamic> argsFromJS,
   required dynamic argsFromDart,
-  BuildContext? context,
 });
 
 /// A JsInjector takes a String of JavaScript-code and injects it into a WebView.
@@ -36,7 +34,6 @@ Future<void> handleMessageFromJavaScript({
   required dynamic argsFromDart,
   required JsHandler jsHandler,
   required JsInjector jsInjector,
-  BuildContext? context,
 }) async {
   if (kDebugMode) {
     // message can be a string of multiple megabytes; therefore do not print it in production!
@@ -63,10 +60,7 @@ Future<void> handleMessageFromJavaScript({
       String? invocationID = messageFromJs.substring(
           messageFromJs.indexOf("invocationID") + "invocationID".length + 3,
           messageFromJs.indexOf(
-              "\"",
-              messageFromJs.indexOf("invocationID") +
-                  "invocationID".length +
-                  3));
+              "\"", messageFromJs.indexOf("invocationID") + "invocationID".length + 3));
 
       await _sendResultToJavaScript(
         result: resultError,
@@ -82,10 +76,10 @@ Future<void> handleMessageFromJavaScript({
   Map<String, dynamic>? argsFromJs = obj["args"];
   try {
     final Map<String, dynamic> result = await jsHandler(
-        functionName: functionName,
-        argsFromJS: argsFromJs ?? {},
-        argsFromDart: argsFromDart,
-        context: context);
+      functionName: functionName,
+      argsFromJS: argsFromJs ?? {},
+      argsFromDart: argsFromDart,
+    );
     await _sendResultToJavaScript(
         result: result,
         promiseStatus: "resolve",
