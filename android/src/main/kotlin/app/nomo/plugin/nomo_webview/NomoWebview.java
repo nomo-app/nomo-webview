@@ -57,6 +57,7 @@ public class NomoWebview {
             int height = webView.getHeight();
             bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
+            canvas.translate(-webView.getScrollX(), -webView.getScrollY());
             webView.draw(canvas);
             stream = new ByteArrayOutputStream();
             final boolean compressed = bitmap.compress(

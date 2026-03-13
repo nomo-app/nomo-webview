@@ -13,9 +13,9 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter: ^4.10.0
-  webview_flutter_android: ^4.3.3
-  webview_flutter_wkwebview: ^3.15.0
+  webview_flutter: ^4.13.1
+  webview_flutter_android: ^4.10.13
+  webview_flutter_wkwebview: ^3.24.0
   file_picker:
     path: packages/flutter_file_picker
 
