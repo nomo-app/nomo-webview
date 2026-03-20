@@ -14,6 +14,11 @@ class KnownJsHandlerError extends Error implements UnsupportedError {
   }
 }
 
+class CodedJsHandlerError extends KnownJsHandlerError {
+  final int code;
+  CodedJsHandlerError(this.code, String message) : super(message);
+}
+
 /// A JsHandler takes arguments from both Dart and JavaScript and returns a Map that gets returned to JavaScript.
 /// Moreover, a JsHandler takes a "functionName" from JavaScript.
 /// The contents of the returned map must be serializable to JSON.
@@ -86,17 +91,20 @@ Future<void> handleMessageFromJavaScript({
         invocationID: invocationID,
         jsInjector: jsInjector);
   } catch (e, s) {
-    final String
-        resultError; // give errors as raw string instead of objects to make console.error work in JavaScript
-    if (e is KnownJsHandlerError) {
-      // known error cases like "user errors": give a simple error message to JavaScript, without any stackTrace
+    final String resultError;
+    if (e is CodedJsHandlerError) {
       resultError = jsonEncode({
-        functionName: e.toString(),
+        "code": e.code,
+        "message": e.toString(),
+      });
+    } else if (e is KnownJsHandlerError) {
+      resultError = jsonEncode({
+        "message": e.toString(),
       });
     } else {
-      // those are unknown(!) errors: give a stackTrace to JavaScript to enable debugging
       resultError = jsonEncode({
-        "exception": e.toString(),
+        "code": -32603,
+        "message": e.toString(),
         "dartStackTrace": s.toString(),
       });
     }
