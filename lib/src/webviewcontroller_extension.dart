@@ -32,6 +32,7 @@ class NomoController {
     } else if (Platform.isIOS || Platform.isMacOS) {
       final platform = c.platform as WebKitWebViewController;
       viewID = platform.webViewIdentifier;
+      platform.setInspectable(isWebviewDebuggingEnabled());
     } else {
       throw "Nomo Controller not implemented for this platform";
     }
