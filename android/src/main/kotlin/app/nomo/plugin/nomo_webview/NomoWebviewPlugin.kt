@@ -14,9 +14,13 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.webkit.WebView
 import android.webkit.WebSettings
+import android.os.Looper
+import android.os.Handler
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin
+
+import android.webkit.JavascriptInterface
 
 class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
@@ -64,6 +68,27 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
       }
     } else if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    } else if (call.method == "addJavaScriptChannel") {
+      Log.e("NomoWebviewPlugin", "called setJSInterface")
+      try {
+        val args = call.arguments() as? Map<String?, Any?>
+        val viewID = args?.get("viewID") as? Int
+        if (viewID == null) {
+            result.error("INVALID_ARGUMENTS", "Missing or invalid viewID", null)
+            return
+        }
+        val channelName = args?.get("channelName") as? String
+        if (channelName == null) {
+          result.error("INVALID_ARGUMENTS", "Missing or invalid channelName", null)
+          return
+        }
+        val jsChannel = JavaScriptChannel(channel, viewID, channelName)
+        setJSInterface(viewID, jsChannel)
+
+        result.success("")
+      } catch (e: Exception) {
+          result.error("INVALID_ARGUMENTS", "Failed to parse arguments", e.message)
+      }
     } else {
       result.notImplemented()
     }
@@ -95,6 +120,34 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
           "contentLength" to contentLength,
         ))
       })
+    return null;
+  }
+
+  class JavaScriptChannel(val methodChannel: MethodChannel, val webViewId: Int, val channelName: String) {
+
+    // Suppressing unused warning as this is invoked from JavaScript.
+    @SuppressWarnings("unused")
+    @JavascriptInterface
+    fun postMessage(message: String){
+      Log.e("NomoWebviewPlugin", "got message on ${channelName}: ${message}")
+      Handler(Looper.getMainLooper()).post {
+      methodChannel.invokeMethod("onJSMessage", mapOf(
+          "webViewId" to webViewId,
+          "message" to message,
+          "channelName" to channelName,
+        )
+      )}
+      Log.e("NomoWebviewPlugin", "got message on ${channelName}: ${message} 2")
+    }
+  }
+
+  private fun setJSInterface(webViewId: Int, jsChannel: JavaScriptChannel): Void? {
+    if (!this::engine.isInitialized) {
+        Log.e("NomoWebviewPlugin", "Engine not initialized")
+        throw IllegalStateException("Engine not initialized")
+    }
+    val view = NomoWebview(webViewId, engine)
+    view.setJSInterface(jsChannel, jsChannel.channelName)
     return null;
   }
 

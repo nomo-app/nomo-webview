@@ -61,11 +61,13 @@ Future<void> handleMessageFromJavaScript({
         "dartStackTrace": s.toString(),
       });
 
+      final start = messageFromJs.indexOf("invocationID");
+      String? invocationID = "";
+      if (start >= 0) {
+        invocationID = messageFromJs.substring(start + "invocationID".length + 3,
+            messageFromJs.indexOf("\"", start + "invocationID".length + 3));
+      }
       //try to extract invocationID to show better error
-      String? invocationID = messageFromJs.substring(
-          messageFromJs.indexOf("invocationID") + "invocationID".length + 3,
-          messageFromJs.indexOf(
-              "\"", messageFromJs.indexOf("invocationID") + "invocationID".length + 3));
 
       await _sendResultToJavaScript(
         result: resultError,

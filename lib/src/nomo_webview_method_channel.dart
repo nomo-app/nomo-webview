@@ -23,28 +23,31 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
 
   @override
   Future<Uint8List?> takeScreenshot(int viewID) async {
-    final canvas = await methodChannel
-        .invokeMethod<Uint8List?>('takeScreenshot', {'viewID': viewID});
+    final canvas =
+        await methodChannel.invokeMethod<Uint8List?>('takeScreenshot', {'viewID': viewID});
     return canvas;
   }
 
   @override
-  Future<void> setDownloadListener(
-      int viewID, DownloadStartCb onDownloadStart) async {
+  Future<void> setDownloadListener(int viewID, DownloadStartCb onDownloadStart) async {
     downloadListener = onDownloadStart;
-    await methodChannel
-        .invokeMethod<void>('setDownloadListener', {'viewID': viewID});
+    await methodChannel.invokeMethod<void>('setDownloadListener', {'viewID': viewID});
     return;
   }
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 
+  @override
+  Future<void> setJSInterface(int viewID) async {
+    methodChannel.invokeMethod<void>('setJSInterface', {'viewID': viewID});
+  }
+
   DownloadStartCb? downloadListener;
+  void Function(String)? onMessageReceivedCB;
 
   Future<dynamic> _handleMethodCall(MethodCall call) {
     switch (call.method) {
@@ -59,7 +62,19 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
           call.arguments["contentLength"],
         );
         break;
+      case 'onJSMessage':
+        debugPrint("msg received");
+        onMessageReceivedCB!(call.arguments["message"]);
+        break;
     }
     return Future(() => null);
+  }
+
+  @override
+  Future<void> addJavaScriptChannel(
+      int viewID, String name, void Function(String) onMessageReceived) async {
+    onMessageReceivedCB = onMessageReceived;
+    methodChannel
+        .invokeMethod<void>('addJavaScriptChannel', {'viewID': viewID, 'channelName': name});
   }
 }

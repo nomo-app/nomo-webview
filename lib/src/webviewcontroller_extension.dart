@@ -90,6 +90,11 @@ class NomoController {
     );
   }
 
+  Future<void> addJavaScriptChannel(String name,
+      {required void Function(String) onMessageReceived}) async {
+    return NomoWebviewPlatform.instance.addJavaScriptChannel(viewID!, name, onMessageReceived);
+  }
+
   /// Takes a screenshot of the current WebView content.
   ///
   /// Returns a [Uint8List] containing the screenshot data in PNG format,
