@@ -14,9 +14,13 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.webkit.WebView
 import android.webkit.WebSettings
+import android.os.Looper
+import android.os.Handler
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin
+
+import android.webkit.JavascriptInterface
 
 class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
@@ -64,6 +68,26 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
       }
     } else if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
+    } else if (call.method == "addJavaScriptChannel") {
+      try {
+        val args = call.arguments() as? Map<String?, Any?>
+        val viewID = args?.get("viewID") as? Int
+        if (viewID == null) {
+            result.error("INVALID_ARGUMENTS", "Missing or invalid viewID", null)
+            return
+        }
+        val channelName = args?.get("channelName") as? String
+        if (channelName == null) {
+          result.error("INVALID_ARGUMENTS", "Missing JS channel name", null)
+          return
+        }
+        val jsChannel = JavaScriptChannel(channel, viewID, channelName)
+        addJSInterface(jsChannel)
+
+        result.success(channelName)
+      } catch (e: Exception) {
+          result.error("INVALID_ARGUMENTS", "Failed to parse arguments", e.message)
+      }
     } else {
       result.notImplemented()
     }
@@ -95,6 +119,37 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
           "contentLength" to contentLength,
         ))
       })
+    return null;
+  }
+
+  class JavaScriptChannel(val methodChannel: MethodChannel, val webViewId: Int, val channelName: String) {
+
+    @SuppressWarnings("unused")
+    @JavascriptInterface
+    fun postMessage(message: String?) {
+    val normalizedMessage = message ?: ""
+      Handler(Looper.getMainLooper()).post {
+      methodChannel.invokeMethod("onJSMessage", mapOf(
+          "webViewId" to webViewId,
+          "message" to normalizedMessage,
+          "channelName" to channelName,
+        )
+      )}
+    }
+  }
+/***
+  Compatibility note. Applications targeting Build.VERSION_CODES.N or later, JavaScript state from an empty WebView is no longer persisted across navigations like loadUrl(String). For example, global variables and functions defined before calling loadUrl(String) will not exist in the loaded page. Applications should use addJavascriptInterface(Object, String) instead to persist JavaScript objects across navigations.
+  https://developer.android.com/reference/android/webkit/WebView#evaluateJavascript(java.lang.String,%20android.webkit.ValueCallback%3Cjava.lang.String%3E)
+***/
+
+// ^ should we run in any issues regarding js channels
+  private fun addJSInterface(jsChannel: JavaScriptChannel): Void? {
+    if (!this::engine.isInitialized) {
+        Log.e("NomoWebviewPlugin", "Engine not initialized")
+        throw IllegalStateException("Engine not initialized")
+    }
+    val view = NomoWebview(jsChannel.webViewId, engine)
+    view.addJSInterface(jsChannel, jsChannel.channelName)
     return null;
   }
 

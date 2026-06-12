@@ -34,12 +34,16 @@ abstract class NomoWebviewPlatform extends PlatformInterface {
     throw UnimplementedError('takeScreenshot() has not been implemented.');
   }
 
-  Future<void> setDownloadListener(
-      int viewID, DownloadStartCb onDownloadStart) {
+  Future<void> setDownloadListener(int viewID, DownloadStartCb onDownloadStart) {
     throw UnimplementedError('setDownloadListener() has not been implemented.');
   }
 
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  Future<void> addJavaScriptChannel(
+      int viewID, String name, void Function(String) onMessageReceived) {
+    throw UnimplementedError('addJavaScriptChannel() has not been implemented.');
   }
 }

@@ -86,6 +86,15 @@ public class NomoWebview {
         return null;
     }
 
+    public void addJSInterface(Object object, String name) {
+        WebView webView = WebViewFlutterAndroidExternalApi.getWebView(engine, webViewId);
+        if (webView != null) {
+            webView.addJavascriptInterface(object, name);
+        } else {
+            Log.e("nomo webview", "no webView found");
+        }
+    }
+
     public void setDownloadListener(OnDownloadStart onDownloadStart) {
         WebView webView = WebViewFlutterAndroidExternalApi.getWebView(engine, webViewId);
         if(webView != null) {

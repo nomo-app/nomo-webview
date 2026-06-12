@@ -23,28 +23,26 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
 
   @override
   Future<Uint8List?> takeScreenshot(int viewID) async {
-    final canvas = await methodChannel
-        .invokeMethod<Uint8List?>('takeScreenshot', {'viewID': viewID});
+    final canvas =
+        await methodChannel.invokeMethod<Uint8List?>('takeScreenshot', {'viewID': viewID});
     return canvas;
   }
 
   @override
-  Future<void> setDownloadListener(
-      int viewID, DownloadStartCb onDownloadStart) async {
+  Future<void> setDownloadListener(int viewID, DownloadStartCb onDownloadStart) async {
     downloadListener = onDownloadStart;
-    await methodChannel
-        .invokeMethod<void>('setDownloadListener', {'viewID': viewID});
+    await methodChannel.invokeMethod<void>('setDownloadListener', {'viewID': viewID});
     return;
   }
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 
   DownloadStartCb? downloadListener;
+  Map<int, Map<String, void Function(String)?>> onMessageReceivedCB = {};
 
   Future<dynamic> _handleMethodCall(MethodCall call) {
     switch (call.method) {
@@ -59,7 +57,32 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
           call.arguments["contentLength"],
         );
         break;
+      case 'onJSMessage':
+        final webViewId = call.arguments['webViewId'] as int;
+        final channelName = call.arguments['channelName'] as String;
+        final message = call.arguments['message'] as String;
+        final callback = onMessageReceivedCB[webViewId]?[channelName];
+        if (callback == null) {
+          throw StateError(
+            'No JS channel callback registered for viewID=$webViewId channelName=$channelName',
+          );
+        }
+        callback(message);
+        break;
     }
     return Future(() => null);
+  }
+
+  @override
+  Future<void> addJavaScriptChannel(
+      int viewID, String name, void Function(String) onMessageReceived) async {
+    // we could await this future but we shouldn't
+    /*final channelName = await*/ methodChannel
+        .invokeMethod<String>('addJavaScriptChannel', {'viewID': viewID, 'channelName': name});
+    if (/*channelName != null && channelN*/ name.isNotEmpty) {
+      (onMessageReceivedCB[viewID] ??= {})[name] = onMessageReceived;
+    } else {
+      throw "[MethodChannelNomoWebview] could not register js channel ($name)";
+    }
   }
 }

@@ -90,6 +90,23 @@ class NomoController {
     );
   }
 
+  /// adds a java script channel to the webview via
+  /// addJavascriptInterface android webview call
+  /// this function is only intended to be used on android
+  /// in case of an instable js channel ???
+  /// https://developer.android.com/reference/android/webkit/WebView#evaluateJavascript(java.lang.String,%20android.webkit.ValueCallback%3Cjava.lang.String%3E)
+  ///
+  /// throws on other platforms
+
+  Future<void> addJavaScriptChannel(String name,
+      {required void Function(String) onMessageReceived}) async {
+    if (Platform.isAndroid) {
+      return NomoWebviewPlatform.instance.addJavaScriptChannel(viewID!, name, onMessageReceived);
+    }
+    throw UnimplementedError(
+        'addJavaScriptChannel() is only available for android on NomoController, use WebViewController instead');
+  }
+
   /// Takes a screenshot of the current WebView content.
   ///
   /// Returns a [Uint8List] containing the screenshot data in PNG format,
