@@ -42,7 +42,7 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
   }
 
   DownloadStartCb? downloadListener;
-  Map<String, void Function(String)?> onMessageReceivedCB = {};
+  Map<int, Map<String, void Function(String)?>> onMessageReceivedCB = {};
 
   Future<dynamic> _handleMethodCall(MethodCall call) {
     switch (call.method) {
@@ -58,8 +58,16 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
         );
         break;
       case 'onJSMessage':
-        final channelName = call.arguments['channelName'];
-        onMessageReceivedCB[channelName]!(call.arguments["message"]);
+        final webViewId = call.arguments['webViewId'] as int;
+        final channelName = call.arguments['channelName'] as String;
+        final message = call.arguments['message'] as String;
+        final callback = onMessageReceivedCB[webViewId]?[channelName];
+        if (callback == null) {
+          throw StateError(
+            'No JS channel callback registered for viewID=$webViewId channelName=$channelName',
+          );
+        }
+        callback(message);
         break;
     }
     return Future(() => null);
@@ -72,7 +80,7 @@ class MethodChannelNomoWebview extends NomoWebviewPlatform {
     /*final channelName = await*/ methodChannel
         .invokeMethod<String>('addJavaScriptChannel', {'viewID': viewID, 'channelName': name});
     if (/*channelName != null && channelN*/ name.isNotEmpty) {
-      onMessageReceivedCB[name] = onMessageReceived;
+      (onMessageReceivedCB[viewID] ??= {})[name] = onMessageReceived;
     } else {
       throw "[MethodChannelNomoWebview] could not register js channel ($name)";
     }

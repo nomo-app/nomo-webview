@@ -126,11 +126,12 @@ class NomoWebviewPlugin: FlutterPlugin, MethodCallHandler {
 
     @SuppressWarnings("unused")
     @JavascriptInterface
-    fun postMessage(message: String){
+    fun postMessage(message: String?) {
+    val normalizedMessage = message ?: ""
       Handler(Looper.getMainLooper()).post {
       methodChannel.invokeMethod("onJSMessage", mapOf(
           "webViewId" to webViewId,
-          "message" to message,
+          "message" to normalizedMessage,
           "channelName" to channelName,
         )
       )}
