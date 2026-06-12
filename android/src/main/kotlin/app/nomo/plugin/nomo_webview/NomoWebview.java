@@ -86,16 +86,12 @@ public class NomoWebview {
         return null;
     }
 
-    public void setJSInterface(Object object, String name) {
-        Log.e("nomo webview: setJSInterface", "");
+    public void addJSInterface(Object object, String name) {
         WebView webView = WebViewFlutterAndroidExternalApi.getWebView(engine, webViewId);
         if (webView != null) {
-            Log.e("nomo webview: setJSInterface non null", "");
             webView.addJavascriptInterface(object, name);
-            webView.evaluateJavascript("${name}.postMessage('heyo');", null); 
-            Log.e("nomo webview: setJSInterface end", "");
         } else {
-            Log.e("nomo webview: no webView found", "");
+            Log.e("nomo webview", "no webView found");
         }
     }
 

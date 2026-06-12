@@ -42,10 +42,6 @@ abstract class NomoWebviewPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<void> setJSInterface(int viewID) {
-    throw UnimplementedError('setJSInterface() has not been implemented.');
-  }
-
   Future<void> addJavaScriptChannel(
       int viewID, String name, void Function(String) onMessageReceived) {
     throw UnimplementedError('addJavaScriptChannel() has not been implemented.');
